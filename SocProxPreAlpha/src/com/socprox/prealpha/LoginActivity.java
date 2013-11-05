@@ -33,26 +33,24 @@ public class LoginActivity extends Activity {
 	}
 
 	public void loginButtonClicked(View view) {
-		String username = ((EditText)findViewById(R.id.usernameEditText)).getText().toString().trim();
-		String password = ((EditText)findViewById(R.id.passwordEditText)).getText().toString().trim();
+		
 		try
 		{
-			WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-			WifiInfo info = manager.getConnectionInfo();
-			String address = info.getMacAddress();
+			new Thread(new Runnable() {
+			    public void run() {
+			    	String username = ((EditText)findViewById(R.id.usernameEditText)).getText().toString().trim();
+					String password = ((EditText)findViewById(R.id.passwordEditText)).getText().toString().trim();
+					
+			    	WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+					WifiInfo info = manager.getConnectionInfo();
+					String address = info.getMacAddress();
+					
+			    	String call = RESTCaller.loginCall(Website.SOCPROX, address, username, password);
+			    	RESTCaller caller = new RESTCaller();
+			    	JSONArray result = caller.executeToArray(call);
+			    }
+			}).start();
 			
-			String call = RESTCaller.loginCall(Website.SOCPROX, address, username, password);
-	    	RESTCaller caller = new RESTCaller();
-	    	JSONArray result = caller.executeToArray(call);
-	    	
-	    	if (result.get(0) != null)
-	    	{
-	    		
-	    	}
-	    	else
-	    	{
-	    		
-	    	}
 		} catch(Exception e)
 		{
 			System.out.print(e);
