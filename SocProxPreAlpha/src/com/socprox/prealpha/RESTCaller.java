@@ -24,7 +24,7 @@ public class RESTCaller {
 	 * String call = RESTCaller.loginCall("socprox", "ebeerman", "beerman");
     	RESTCaller caller = new RESTCaller();
     	String result = caller.execute(call);
-	 */
+	*/
 	
 	static final String BASEURL = "http://www.cjcornell.com/bluegame/REST/";
 	
