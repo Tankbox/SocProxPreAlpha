@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SocProx Bluetooth Integration</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">This is a Bluetooth Example.</string>
+    
+    <string name="listUsers">List of Devices:</string>
+    <string name="requestScanPromptContent">Press this button to scan for Bluetooth devices:</string>
+    <string name="buttonContent">Scan for Devices</string>
+    <color name="myColor">#F5F5F5</color>
+    <string-array name="detectedDevices">
+        <item >This is a test</item>
+        <item >To see if the ListView</item>
+        <item >is working the way I want.</item>
+    </string-array>
+    <string name="listActivity">List Activity</string>
+    <string name="execute">Execute</string>
+
+</resources>
