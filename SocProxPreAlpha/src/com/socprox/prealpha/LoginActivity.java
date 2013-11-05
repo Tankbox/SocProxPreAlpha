@@ -1,8 +1,14 @@
 package com.socprox.prealpha;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.socprox.prealpha.RESTCaller.Website;
+
 import android.app.Activity;
+import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -15,6 +21,8 @@ public class LoginActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
+		 
+		
 	}
 
 	@Override
@@ -29,11 +37,15 @@ public class LoginActivity extends Activity {
 		String password = ((EditText)findViewById(R.id.passwordEditText)).getText().toString().trim();
 		try
 		{
-			String call = RESTCaller.loginCall(null, "socprox", username, password);
+			WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+			WifiInfo info = manager.getConnectionInfo();
+			String address = info.getMacAddress();
+			
+			String call = RESTCaller.loginCall(Website.SOCPROX, address, username, password);
 	    	RESTCaller caller = new RESTCaller();
-	    	JSONObject result = caller.execute(call);
+	    	JSONArray result = caller.executeToArray(call);
 	    	
-	    	if (result.get("success").equals(0))
+	    	if (result.get(0) != null)
 	    	{
 	    		
 	    	}
@@ -46,5 +58,14 @@ public class LoginActivity extends Activity {
 			System.out.print(e);
 			// Need to execute username and password for REST call now
 		}
+	}
+	
+	public String getMacAddress(Context context) {
+	    WifiManager wimanager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+	    String macAddress = wimanager.getConnectionInfo().getMacAddress();
+	    if (macAddress == null) {
+	        macAddress = "Device don't have mac address or wi-fi is disabled";
+	    }
+	    return macAddress;
 	}
 }
