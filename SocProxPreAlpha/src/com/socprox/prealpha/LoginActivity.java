@@ -1,16 +1,14 @@
 package com.socprox.prealpha;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.socprox.prealpha.RESTCaller.Website;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
@@ -57,6 +55,11 @@ public class LoginActivity extends Activity {
 			System.out.print(e);
 			// Need to execute username and password for REST call now
 		}
+		
+		Intent intent = new Intent(this, LobbyActivity.class);
+		intent.putExtra("USERNAME", username);
+		intent.putExtra("PASSWORD", password);
+		startActivity(intent);		
 	}
 	
 	public String getMacAddress(Context context) {
