@@ -10,6 +10,6 @@
     <string name="user_name_hint">Username</string>
     <string name="login">Login</string>
     <string name="sign_up">Signup</string>
-    <string name="hello">hello</string>
+    
 
 </resources>
