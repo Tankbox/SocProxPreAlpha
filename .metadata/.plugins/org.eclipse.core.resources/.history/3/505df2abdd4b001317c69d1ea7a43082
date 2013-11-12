@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    <ImageView
+        android:id="@+id/img_logo"
+        android:contentDescription="@string/desc"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:src="@drawable/logo" />
+    
+    <ImageButton
+        android:id="@+id/btn_fblogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:onClick="onFBLoginButtonClicked"
+        android:src="@drawable/facebook_connect" />
+    
+     <EditText
+	    android:id="@+id/user_name"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:layout_gravity="center"
+	    android:hint="@string/user_name_hint"
+	    android:inputType="text"
+	    android:imeOptions="actionNext" />
+     
+     <EditText
+	    android:id="@+id/password"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:layout_gravity="center"
+	    android:hint="@string/password_hint"
+	    android:inputType="textPassword"
+	    android:imeOptions="actionSend" />
+     
+     <Button
+        android:id="@+id/btn_login"
+        android:layout_width="207dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:onClick="onLoginButtonClicked"
+        android:text="@string/login" />
+     
+     <Button
+        android:id="@+id/btn_create_account"
+        android:layout_width="206dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:onClick="onCreateAccountButtonClicked"
+        android:text="@string/sign_up" />
+
+</RelativeLayout>
