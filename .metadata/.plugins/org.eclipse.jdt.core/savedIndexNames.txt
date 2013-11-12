@@ -17,4 +17,3 @@ INDEX VERSION 1.126+/Users/okuda/Documents/SocProxPreAlpha/.metadata/.plugins/or
 2213088605.index
 1460256860.index
 4004615851.index
-2370300094.index
