@@ -5,11 +5,12 @@
     <string name="action_settings">Settings</string>
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
-    <string name="desc">An image of the logo</string>
+    <string name="desc_fbutton">An image of the logo</string>
     <string name="password_hint">Password</string>
     <string name="user_name_hint">Username</string>
     <string name="login">Login</string>
-    <string name="sign_up">Signup</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="desc_logo">An image of the logo</string>
     
 
 </resources>
