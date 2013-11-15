@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SocProxNew</string>
+    <string name="action_settings">Settings</string>
+    <string name="challenge_section">Challenges</string>
+    <string name="stats_section">Statistics</string>
+    <string name="desc_fbutton">An image of the logo</string>
+    <string name="password_hint">Password</string>
+    <string name="user_name_hint">Username</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="desc_logo">An image of the logo</string>
+    <string name="service_name">Proximity Service</string>
+    
+
+</resources>
