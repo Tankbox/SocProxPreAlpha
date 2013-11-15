@@ -1,6 +1,7 @@
 package com.socprox.socproxnew;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,7 +39,7 @@ import android.widget.Toast;
 public class DashboardActivity extends FragmentActivity implements
 		ActionBar.OnNavigationListener {
 
-	private final static String DEBUG_TAG = "DashboardActivity";
+	private final static String DEBUG_TAG = "LoginActivity";
 	private BluetoothAdapter mBluetoothAdapter;
 	private static final int REQUEST_ENABLE_BT = 100;
 	private ProgressDialog mProgressDialog;
@@ -108,7 +109,7 @@ public class DashboardActivity extends FragmentActivity implements
 		
 		// -- Not quite sure what this does just yet -- //
 		mProgressDialog = new ProgressDialog(DashboardActivity.this);
-    	mProgressDialog.setMessage("Finding Players");
+    	mProgressDialog.setMessage("Logging In");
     	mProgressDialog.setIndeterminate(true);
     	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 	}
@@ -235,50 +236,6 @@ public class DashboardActivity extends FragmentActivity implements
 		}
 	}
 	
-	private boolean executeREST(String call) {
-		RESTCaller caller = new RESTCaller();
-		JSONObject jsonObject = caller.execute(call);
-		boolean error = false;
-      
-		try {
-			JSONObject jsonObjectBody = jsonObject.getJSONObject("body");
-			socproxUsername = jsonObjectBody.getString("m_strUsername");
-			
-			//Login successful
-			JSONObject jObj = new JSONObject();
-			jObj.put("username", socproxUsername);
-			jObj.put("userMac", jsonObjectBody.getString("m_strMac"));
-			jObj.put("realName", jsonObjectBody.getString("m_strName"));
-			jObj.put("email", jsonObjectBody.getString("m_strFacebook"));
-			User.getInstance(jObj, DashboardActivity.this);
-		} catch (JSONException ex) {
-			//If there is no m_strUsername field then there was an error (user not in database).
-			error=true;
-			ex.printStackTrace();
-			if(d) {
-				Log.d(DEBUG_TAG, "Error on REST return.");
-			}
-		}
-      
-        if(error) {
-        	try {
-	        	//Login error
-	          	String errorMessage = jsonObject.getString("message");
-	          	Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
-	        } catch (JSONException e) {
-	    		e.printStackTrace();
-	    		if(d) {
-					Log.d(DEBUG_TAG, "No error specified by REST.");
-				}
-	    	}
-        }
-        
-        if(d) {
-			Log.d(DEBUG_TAG, "Boolean error = " + error);
-		}
-        return !error;
-  	}
-	
 	private class UsersAsyncTask extends AsyncTask<String, Integer, Boolean> {
 		@Override
 		protected Boolean doInBackground(String... sUrl) {
@@ -291,6 +248,56 @@ public class DashboardActivity extends FragmentActivity implements
 					Log.d(DEBUG_TAG, "Error on REST execution.");
 			}
 			return result;
+		}
+
+		private boolean executeREST(String call) {
+			RESTCaller caller = new RESTCaller();
+			JSONObject restCallResponse = caller.execute(call);
+			boolean error = false;
+		
+			try {
+				JSONArray arrayOfUsers = restCallResponse.getJSONArray("body");
+				for (int i = 0; i < arrayOfUsers.length(); ++i) {
+					JSONObject user = arrayOfUsers.getJSONObject(i);
+					if(!user.getString("m_strMac").isEmpty()){
+						
+					}	
+				}
+				socproxUsername = arrayOfUsers.getString("m_strUsername");
+				
+				//Login successful
+				JSONObject jObj = new JSONObject();
+				jObj.put("username", socproxUsername);
+				jObj.put("userMac", jsonObjectBody.getString("m_strMac"));
+				jObj.put("realName", jsonObjectBody.getString("m_strName"));
+				jObj.put("email", jsonObjectBody.getString("m_strFacebook"));
+				User.getInstance(jObj, DashboardActivity.this);
+			} catch (JSONException ex) {
+				//If there is no m_strUsername field then there was an error (user not in database).
+				error=true;
+				ex.printStackTrace();
+				if(d) {
+					Log.d(DEBUG_TAG, "Error on REST return.");
+				}
+			}
+		
+		    if(error) {
+		    	try {
+		        	//Login error
+		          	String errorMessage = jsonObject.getString("message");
+		          	Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
+		        } catch (JSONException e) {
+		    		e.printStackTrace();
+		    		if(d) {
+						Log.d(DEBUG_TAG, "No error specified by REST.");
+					}
+		    	}
+		    }
+		    
+		    if(d) {
+				Log.d(DEBUG_TAG, "Boolean error = " + error);
+			}
+		    return !error;
 		}
 	}
 }
