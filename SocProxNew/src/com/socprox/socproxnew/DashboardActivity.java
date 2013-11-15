@@ -279,6 +279,18 @@ public class DashboardActivity extends FragmentActivity implements
         return !error;
   	}
 	
-	
-
+	private class UsersAsyncTask extends AsyncTask<String, Integer, Boolean> {
+		@Override
+		protected Boolean doInBackground(String... sUrl) {
+			boolean result = false;
+			try {
+				String call = RESTCaller.getUsersCall();
+				result = executeREST(call);
+			} catch (Exception e) {
+				if(d)
+					Log.d(DEBUG_TAG, "Error on REST execution.");
+			}
+			return result;
+		}
+	}
 }
