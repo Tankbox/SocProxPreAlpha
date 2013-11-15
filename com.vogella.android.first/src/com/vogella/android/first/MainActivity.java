@@ -24,7 +24,6 @@ import android.content.IntentFilter;
 import android.view.Menu;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.view.View;
 import android.bluetooth.*;
@@ -219,8 +218,8 @@ public class MainActivity extends Activity {
 
 		String call = RESTCaller.getAllGamesCall();
 		RESTCaller caller = new RESTCaller();
-		// gamesReturned = caller.executeToArray(call);
-		gamesReturned = executeToArray("getAllGames");
+		gamesReturned = caller.executeToArray(call);
+//		gamesReturned = executeToArray("getAllGames");
 
 		// Go through the games and get the object to be displayed
 		for (int i = 0; i < gamesReturned.length(); ++i) {

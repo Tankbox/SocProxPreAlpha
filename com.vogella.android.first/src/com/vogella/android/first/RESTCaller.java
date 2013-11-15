@@ -1,4 +1,4 @@
-package com.socprox.prealpha;
+package com.vogella.android.first;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,21 +57,17 @@ public class RESTCaller {
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
 		HttpGet httpGet = new HttpGet(finalURL);
-		String result = null;
-		JSONObject jsonObject = null;
-		// Get the list of addresses from the server
+		String result;
+		JSONArray jsonArray = null;
 		try {
 			HttpResponse response = httpClient.execute(httpGet, localContext);
 			HttpEntity entity = response.getEntity();
 			result = getASCIIContentFromEntity(entity);
-			jsonObject = new JSONObject(result);
-			// Return the body of the rest call
-			return jsonObject.getJSONArray("body"); 
+			jsonArray = new JSONArray(result);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// If something bad happens, return null
-		return null;
+		return jsonArray;
 	}
 	
 	protected String getASCIIContentFromEntity(HttpEntity entity) throws IllegalStateException, IOException {
