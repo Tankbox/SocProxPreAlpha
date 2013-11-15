@@ -51,6 +51,7 @@ public class DashboardActivity extends FragmentActivity implements
 	private ArrayAdapter<String> mNearbyUsers_MAC = null;
 	private ArrayAdapter<String> mNearbyUsers_NAME = null;
 	private ArrayAdapter<String> mListGames = null;
+	private IntentFilter bluetoothReceiverFilter = null;
 	
 	/**
 	 * The serialization (saved instance state) Bundle key representing the
@@ -60,7 +61,8 @@ public class DashboardActivity extends FragmentActivity implements
 
 	//this method fires when this screen loads
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
 
@@ -81,15 +83,51 @@ public class DashboardActivity extends FragmentActivity implements
 // -- Joe's code starts here -- //
 
 		// Register the BroadcastReceiver
-		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-		filter.addAction(BluetoothDevice.ACTION_UUID);
-		filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-		filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-		registerReceiver(mReceiver, filter); // Don't forget to unregister
-												// during onDestroy
+		bluetoothReceiverFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+		bluetoothReceiverFilter.addAction(BluetoothDevice.ACTION_UUID);
+		bluetoothReceiverFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+		bluetoothReceiverFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+		registerReceiver(mReceiver, bluetoothReceiverFilter); 	// Don't forget to unregister
+																// during onDestroy
 		// Get local Bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
+		CheckAndEnableBluetooth();
+		if(mBluetoothAdapter.isEnabled())
+		{
+			InitializeArrayAdapters();
+			ScanForPlayers();
+		}
+			// This code sets the Play button to INVISIBLE and then after 12 seconds
+		// (the length of time needed to scan for player) it sets it to VISIBLE
+//		findViewById(R.id.playButton).setVisibility(View.INVISIBLE);
+//		findViewById(R.id.playButton).postDelayed(new Runnable() {
+//			public void run() {
+//				findViewById(R.id.playButton).setVisibility(View.VISIBLE);
+//			}
+//		}, 12000);			
+		
+		// -- Not quite sure what this does just yet -- //
+		mProgressDialog = new ProgressDialog(DashboardActivity.this);
+    	mProgressDialog.setMessage("Finding Players");
+    	mProgressDialog.setIndeterminate(true);
+    	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	}
+	
+	private void InitializeArrayAdapters() {
+		// Initialize ArrayAdapters for comparison
+		mScannedDevices = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1);
+		mListUsers = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1);
+		mNearbyUsers_MAC = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1);
+		mNearbyUsers_NAME = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1);
+		mListGames = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1);		
+	}
+	
+	private void CheckAndEnableBluetooth() {
 		// If the adapter is null, then Bluetooth is not supported
 		if (mBluetoothAdapter == null) {
 			Toast.makeText(this, "Bluetooth is not supported on this device.",
@@ -105,50 +143,7 @@ public class DashboardActivity extends FragmentActivity implements
 					BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
 			// Else it is on, so let's make some magic happen
-		} else {
-			// Initialize ArrayAdapters for comparison
-			mScannedDevices = new ArrayAdapter<String>(this,
-					android.R.layout.simple_list_item_1);
-			mListUsers = new ArrayAdapter<String>(this,
-					android.R.layout.simple_list_item_1);
-			mNearbyUsers_MAC = new ArrayAdapter<String>(this,
-					android.R.layout.simple_list_item_1);
-			mNearbyUsers_NAME = new ArrayAdapter<String>(this,
-					android.R.layout.simple_list_item_1);
-			mListGames = new ArrayAdapter<String>(this,
-					android.R.layout.simple_list_item_1);
-
-			// Scan for unpaired devices
-			scanForPlayers();
-
-			// Finally set the value of the ListView to the value of the
-			// mScannedDevices
-			// This is just a placeholder to make sure that the scan is behaving
-			// the correct way
-			listView = (ListView) findViewById(R.id.listOfPlayers);
-			listView.setAdapter(mScannedDevices);
 		}
-
-		// This code sets the Play button to INVISIBLE and then after 12 seconds
-		// (the length of time needed to scan for player) it sets it to VISIBLE
-		findViewById(R.id.playButton).setVisibility(View.INVISIBLE);
-		findViewById(R.id.playButton).postDelayed(new Runnable() {
-			public void run() {
-				findViewById(R.id.playButton).setVisibility(View.VISIBLE);
-			}
-		}, 12000);			
-		
-
-
-		
-		
-		
-		
-		// -- Not quite sure what this does just yet -- //
-		mProgressDialog = new ProgressDialog(DashboardActivity.this);
-    	mProgressDialog.setMessage("Logging In");
-    	mProgressDialog.setIndeterminate(true);
-    	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 	}
 	
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -166,7 +161,16 @@ public class DashboardActivity extends FragmentActivity implements
 		}
 	};
 	
-	
+	public void ScanForPlayers() {
+		// Start discovery of Bluetooth devices
+		if (!mBluetoothAdapter.isDiscovering())
+			mBluetoothAdapter.startDiscovery();
+		
+		while(mBluetoothAdapter.isDiscovering()) {
+			Log.d(DEBUG_TAG, "Scanning");
+		}
+		Log.d(DEBUG_TAG, "Finished Scanning for MAC addresses");
+	}	
 
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
