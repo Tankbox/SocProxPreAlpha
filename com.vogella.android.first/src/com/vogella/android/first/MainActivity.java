@@ -219,7 +219,7 @@ public class MainActivity extends Activity {
 		String call = RESTCaller.getAllGamesCall();
 		RESTCaller caller = new RESTCaller();
 		gamesReturned = caller.executeToArray(call);
-//		gamesReturned = executeToArray("getAllGames");
+		gamesReturned = executeToArray("getAllGames");
 
 		// Go through the games and get the object to be displayed
 		for (int i = 0; i < gamesReturned.length(); ++i) {
