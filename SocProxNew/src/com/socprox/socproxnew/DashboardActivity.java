@@ -33,7 +33,7 @@ import android.widget.Toast;
 public class DashboardActivity extends FragmentActivity implements
 		ActionBar.OnNavigationListener {
 
-	private final static String DEBUG_TAG = "LoginActivity";
+	private final static String DEBUG_TAG = "DashboardActivity";
 	private BluetoothAdapter mBluetoothAdapter;
 	private static final int REQUEST_ENABLE_BT = 100;
 	private ProgressDialog mProgressDialog;
