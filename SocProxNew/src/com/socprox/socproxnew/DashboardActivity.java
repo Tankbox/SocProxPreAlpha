@@ -61,7 +61,8 @@ public class DashboardActivity extends FragmentActivity implements
 
 	//this method fires when this screen loads
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
 
@@ -90,15 +91,13 @@ public class DashboardActivity extends FragmentActivity implements
 																// during onDestroy
 		// Get local Bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
 		CheckAndEnableBluetooth();
-
-		if(mBluetoothAdapter.isEnabled()) {			
+		if(mBluetoothAdapter.isEnabled())
+		{
 			InitializeArrayAdapters();
 			ScanForPlayers();
 		}
-
-		// This code sets the Play button to INVISIBLE and then after 12 seconds
+			// This code sets the Play button to INVISIBLE and then after 12 seconds
 		// (the length of time needed to scan for player) it sets it to VISIBLE
 //		findViewById(R.id.playButton).setVisibility(View.INVISIBLE);
 //		findViewById(R.id.playButton).postDelayed(new Runnable() {
@@ -144,7 +143,7 @@ public class DashboardActivity extends FragmentActivity implements
 					BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
 			// Else it is on, so let's make some magic happen
-		}		
+		}
 	}
 	
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -167,7 +166,10 @@ public class DashboardActivity extends FragmentActivity implements
 		if (!mBluetoothAdapter.isDiscovering())
 			mBluetoothAdapter.startDiscovery();
 		
-		while(mBluetoothAdapter.isDiscovering());
+		while(mBluetoothAdapter.isDiscovering()) {
+			Log.d(DEBUG_TAG, "Scanning");
+		}
+		Log.d(DEBUG_TAG, "Finished Scanning for MAC addresses");
 	}	
 
 	@Override
