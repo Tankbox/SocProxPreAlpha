@@ -108,7 +108,7 @@ public class DashboardActivity extends FragmentActivity implements
 		
 		// -- Not quite sure what this does just yet -- //
 		mProgressDialog = new ProgressDialog(DashboardActivity.this);
-    	mProgressDialog.setMessage("Logging In");
+    	mProgressDialog.setMessage("Finding Players");
     	mProgressDialog.setIndeterminate(true);
     	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 	}

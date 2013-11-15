@@ -102,6 +102,10 @@ public class RESTCaller {
 		return "getChallengeInstance/" + mac + "/" + challengeId;
 	}
 	
+	public static String getUsersCall() {
+		return "users/";
+	}
+	
 	public static String getStandings(String mac, int limit, String gameName) {
 		String result = "getStandings/";
 		if (!mac.equals("")) {
