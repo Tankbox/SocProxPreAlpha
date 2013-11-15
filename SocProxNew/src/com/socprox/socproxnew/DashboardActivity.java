@@ -38,7 +38,7 @@ import android.widget.Toast;
 public class DashboardActivity extends FragmentActivity implements
 		ActionBar.OnNavigationListener {
 
-	private final static String DEBUG_TAG = "LoginActivity";
+	private final static String DEBUG_TAG = "DashboardActivity";
 	private BluetoothAdapter mBluetoothAdapter;
 	private static final int REQUEST_ENABLE_BT = 100;
 	private ProgressDialog mProgressDialog;
@@ -108,7 +108,7 @@ public class DashboardActivity extends FragmentActivity implements
 		
 		// -- Not quite sure what this does just yet -- //
 		mProgressDialog = new ProgressDialog(DashboardActivity.this);
-    	mProgressDialog.setMessage("Logging In");
+    	mProgressDialog.setMessage("Finding Players");
     	mProgressDialog.setIndeterminate(true);
     	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 	}

@@ -45,7 +45,6 @@ public class LoginActivity extends Activity {
     	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }  
 	
-	//
 	public void onLoginButtonClicked(View v){
     	userName = ((EditText)findViewById(R.id.user_name)).getText().toString().trim();
     	password = ((EditText)findViewById(R.id.password)).getText().toString().trim();
