@@ -1,4 +1,4 @@
-package com.vogella.android.first;
+package com.socprox.socproxnew;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,8 +15,8 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+
 public class RESTCaller {
-	
 	public static final String DEBUG_TAG = "RESTCaller";
 	public static final boolean debug = true;
 	
@@ -24,7 +24,7 @@ public class RESTCaller {
 	 * String call = RESTCaller.loginCall("socprox", "ebeerman", "beerman");
     	RESTCaller caller = new RESTCaller();
     	String result = caller.execute(call);
-	*/
+	 */
 	
 	static final String BASEURL = "http://www.cjcornell.com/bluegame/REST/";
 	
@@ -190,4 +190,5 @@ public class RESTCaller {
 	public enum Website {
 		FACEBOOK, TWITTER, SOCPROX
 	}
+
 }
