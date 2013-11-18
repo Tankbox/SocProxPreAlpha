@@ -71,7 +71,17 @@
             android:name=".SignupActivity"
             android:label="@string/app_name" >
         </activity>
-        
+        <activity
+            android:name=".DashboardActivity"
+            android:label="@string/app_name" 
+            android:launchMode="singleTask" > <!-- This is important for Twitter4J to work -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="socprox-app" android:host="registerAlias" />
+			</intent-filter>
+        </activity>
         <activity
             android:name=".GameActivity"
             android:label="@string/app_name" >

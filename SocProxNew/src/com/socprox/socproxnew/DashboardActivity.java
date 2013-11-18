@@ -94,8 +94,14 @@ public class DashboardActivity extends FragmentActivity implements
 		CheckAndEnableBluetooth();
 		if(mBluetoothAdapter.isEnabled())
 		{
+			mProgressDialog = new ProgressDialog(DashboardActivity.this);
+	    	mProgressDialog.setMessage("Finding Players");
+	    	mProgressDialog.setIndeterminate(true);
+	    	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	    	
 			InitializeArrayAdapters();
 			ScanForPlayers();
+			mProgressDialog.dismiss();
 		}
 			// This code sets the Play button to INVISIBLE and then after 12 seconds
 		// (the length of time needed to scan for player) it sets it to VISIBLE
@@ -107,10 +113,7 @@ public class DashboardActivity extends FragmentActivity implements
 //		}, 12000);			
 		
 		// -- Not quite sure what this does just yet -- //
-		mProgressDialog = new ProgressDialog(DashboardActivity.this);
-    	mProgressDialog.setMessage("Finding Players");
-    	mProgressDialog.setIndeterminate(true);
-    	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
 	}
 	
 	private void InitializeArrayAdapters() {
