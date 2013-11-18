@@ -46,11 +46,12 @@ public final class R {
         public static final int logo=0x7f020002;
     }
     public static final class id {
-        public static final int action_settings=0x7f090008;
+        public static final int action_settings=0x7f090009;
         public static final int btn_fblogin=0x7f090003;
         public static final int btn_login=0x7f090006;
         public static final int btn_signup=0x7f090007;
         public static final int container=0x7f090000;
+        public static final int email=0x7f090008;
         public static final int imageView1=0x7f090002;
         public static final int password=0x7f090005;
         public static final int section_label=0x7f090001;
@@ -60,6 +61,7 @@ public final class R {
         public static final int activity_dashboard=0x7f030000;
         public static final int fragment_dashboard_dummy=0x7f030001;
         public static final int login=0x7f030002;
+        public static final int signup=0x7f030003;
     }
     public static final class menu {
         public static final int dashboard=0x7f080000;
@@ -70,6 +72,7 @@ public final class R {
         public static final int challenge_section=0x7f060002;
         public static final int desc_fbutton=0x7f060004;
         public static final int desc_logo=0x7f060009;
+        public static final int email_hint=0x7f06000b;
         public static final int login=0x7f060007;
         public static final int password_hint=0x7f060005;
         public static final int service_name=0x7f06000a;

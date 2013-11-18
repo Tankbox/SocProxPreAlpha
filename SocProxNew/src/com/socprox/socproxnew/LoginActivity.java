@@ -34,35 +34,35 @@ public class LoginActivity extends Activity {
     }  
 	
 	//
-	public void onLoginButtonClicked(View v){
-    	userName = ((EditText)findViewById(R.id.user_name)).getText().toString().trim();
-    	password = ((EditText)findViewById(R.id.password)).getText().toString().trim();
-
-    	// execute this when the login must be fired
-    	LoginAsyncTask loginAsyncTask = new LoginAsyncTask();
-    	loginAsyncTask.execute();
-    }
+//	public void onLoginButtonClicked(View v){
+//    	userName = ((EditText)findViewById(R.id.user_name)).getText().toString().trim();
+//    	password = ((EditText)findViewById(R.id.password)).getText().toString().trim();
+//
+//    	// execute this when the login must be fired
+//    	LoginAsyncTask loginAsyncTask = new LoginAsyncTask();
+//    	loginAsyncTask.execute();
+//    }
 	
-	private class LoginAsyncTask extends AsyncTask<String, Integer, Boolean> {
-        @Override
-        protected Boolean doInBackground(String... sUrl) {
-        	boolean result = false;
-            try {
-            	String call = RESTCaller.loginCall(Website.SOCPROX, mBluetoothAdapter.getAddress(), username, password);
-            	result = executeREST(call);
-            } catch (Exception e) {
-            	if(d) {
-    				Log.d(DEBUG_TAG, "Error on REST execution.");
-    			}
-            }
-            return result;
-        }
-        
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressDialog.show();
-        }
+//	private class LoginAsyncTask extends AsyncTask<String, Integer, Boolean> {
+//        @Override
+//        protected Boolean doInBackground(String... sUrl) {
+//        	boolean result = false;
+//            try {
+//            	String call = RESTCaller.loginCall(Website.SOCPROX, mBluetoothAdapter.getAddress(), userName, password);
+//            	result = executeREST(call);
+//            } catch (Exception e) {
+//            	if(d) {
+//    				Log.d(DEBUG_TAG, "Error on REST execution.");
+//    			}
+//            }
+//            return result;
+//        }
+//        
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            mProgressDialog.show();
+//        }
         
 //        @Override
 //        protected void onPostExecute(Boolean result) {
@@ -78,5 +78,5 @@ public class LoginActivity extends Activity {
 //            	Toast.makeText(DashboardActivity.this, "Login failed!", Toast.LENGTH_SHORT).show();
 //            }
 //        }
-    }
+    //}
 }

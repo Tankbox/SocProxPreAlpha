@@ -12,6 +12,7 @@
     <string name="sign_up">Sign Up</string>
     <string name="desc_logo">An image of the logo</string>
     <string name="service_name">Proximity Service</string>
+    <string name="email_hint">Email</string>
     
 
 </resources>
