@@ -10,7 +10,11 @@ import com.socprox.socproxnew.RESTCaller.Website;
 import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -27,13 +31,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class DashboardActivity extends FragmentActivity implements
 		ActionBar.OnNavigationListener {
 
-	private final static String DEBUG_TAG = "LoginActivity";
+	private final static String DEBUG_TAG = "DashboardActivity";
 	private BluetoothAdapter mBluetoothAdapter;
 	private static final int REQUEST_ENABLE_BT = 100;
 	private ProgressDialog mProgressDialog;
@@ -41,6 +46,12 @@ public class DashboardActivity extends FragmentActivity implements
     private String password;
     private final static boolean d = true;
     private static String socproxUsername;
+	private ArrayAdapter<String> mScannedDevices = null;
+	private ArrayAdapter<String> mListUsers = null;
+	private ArrayAdapter<String> mNearbyUsers_MAC = null;
+	private ArrayAdapter<String> mNearbyUsers_NAME = null;
+	private ArrayAdapter<String> mListGames = null;
+	private IntentFilter bluetoothReceiverFilter = null;
 	
 	/**
 	 * The serialization (saved instance state) Bundle key representing the
@@ -50,7 +61,8 @@ public class DashboardActivity extends FragmentActivity implements
 
 	//this method fires when this screen loads
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
 
@@ -67,41 +79,98 @@ public class DashboardActivity extends FragmentActivity implements
 						android.R.id.text1, new String[] {
 								getString(R.string.challenge_section),
 								getString(R.string.stats_section), }), this);
-		
+
+// -- Joe's code starts here -- //
+
+		// Register the BroadcastReceiver
+		bluetoothReceiverFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+		bluetoothReceiverFilter.addAction(BluetoothDevice.ACTION_UUID);
+		bluetoothReceiverFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+		bluetoothReceiverFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+		registerReceiver(mReceiver, bluetoothReceiverFilter); 	// Don't forget to unregister
+																// during onDestroy
+		// Get local Bluetooth adapter
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		Button loginButton = (Button) findViewById(R.id.btn_login);
-		
-		// if device does not support Bluetooth
-		if(mBluetoothAdapter == null) {
-			Toast.makeText(this,
-				"This device does not support Bluetooth.",
-				Toast.LENGTH_LONG).show();
-			Log.d(DEBUG_TAG, "Device does not support Bluetooth.");
-			loginButton.setEnabled(false);
-		} else {
-			if(!mBluetoothAdapter.isEnabled()) {
-				// prompt user to enable bluetooth
-			    boolean firstrun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("firstrun", true);
-                if(firstrun){
-                    Intent enableBtIntent = new Intent(
-                            BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-                    
-                    // Save the state
-                    getSharedPreferences("PREFERENCE", MODE_PRIVATE)
-                    .edit()
-                    .putBoolean("firstrun", false)
-                    .commit();
-                }    
-			}
+		CheckAndEnableBluetooth();
+		if(mBluetoothAdapter.isEnabled())
+		{
+			InitializeArrayAdapters();
+			ScanForPlayers();
 		}
+			// This code sets the Play button to INVISIBLE and then after 12 seconds
+		// (the length of time needed to scan for player) it sets it to VISIBLE
+//		findViewById(R.id.playButton).setVisibility(View.INVISIBLE);
+//		findViewById(R.id.playButton).postDelayed(new Runnable() {
+//			public void run() {
+//				findViewById(R.id.playButton).setVisibility(View.VISIBLE);
+//			}
+//		}, 12000);			
+		
+		// -- Not quite sure what this does just yet -- //
 		mProgressDialog = new ProgressDialog(DashboardActivity.this);
-    	mProgressDialog.setMessage("Logging In");
+    	mProgressDialog.setMessage("Finding Players");
     	mProgressDialog.setIndeterminate(true);
     	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 	}
 	
+	private void InitializeArrayAdapters() {
+		// Initialize ArrayAdapters for comparison
+		mScannedDevices = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1);
+		mListUsers = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1);
+		mNearbyUsers_MAC = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1);
+		mNearbyUsers_NAME = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1);
+		mListGames = new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1);		
+	}
 	
+	private void CheckAndEnableBluetooth() {
+		// If the adapter is null, then Bluetooth is not supported
+		if (mBluetoothAdapter == null) {
+			Toast.makeText(this, "Bluetooth is not supported on this device.",
+					Toast.LENGTH_LONG).show();
+			finish();
+		}
+
+		// This if-else statement is a request to turn Bluetooth on
+		// The body of the 'if' section should go in the on-create after login
+		// The else section should go in the onCreate of the "Play" activity.
+		if (!mBluetoothAdapter.isEnabled()) {
+			Intent enableIntent = new Intent(
+					BluetoothAdapter.ACTION_REQUEST_ENABLE);
+			startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+			// Else it is on, so let's make some magic happen
+		}
+	}
+	
+	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			// When discovery finds a device
+			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+				// Get the BluetoothDevice object from the Intent
+				BluetoothDevice device = intent
+						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				// Add the address to an array adapter to show in a ListView
+				mScannedDevices.add(device.getAddress());
+			}
+		}
+	};
+	
+	public void ScanForPlayers() {
+		// Start discovery of Bluetooth devices
+		if (!mBluetoothAdapter.isDiscovering())
+			mBluetoothAdapter.startDiscovery();
+		
+		while(mBluetoothAdapter.isDiscovering()) {
+			Log.d(DEBUG_TAG, "Scanning");
+		}
+		Log.d(DEBUG_TAG, "Finished Scanning for MAC addresses");
+	}	
 
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {

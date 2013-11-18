@@ -1,4 +1,4 @@
-package com.socprox.prealpha;
+package com.socprox.socproxnew;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,8 +15,8 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+
 public class RESTCaller {
-	
 	public static final String DEBUG_TAG = "RESTCaller";
 	public static final boolean debug = true;
 	
@@ -24,7 +24,7 @@ public class RESTCaller {
 	 * String call = RESTCaller.loginCall("socprox", "ebeerman", "beerman");
     	RESTCaller caller = new RESTCaller();
     	String result = caller.execute(call);
-	*/
+	 */
 	
 	static final String BASEURL = "http://www.cjcornell.com/bluegame/REST/";
 	
@@ -57,21 +57,17 @@ public class RESTCaller {
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
 		HttpGet httpGet = new HttpGet(finalURL);
-		String result = null;
-		JSONObject jsonObject = null;
-		// Get the list of addresses from the server
+		String result;
+		JSONArray jsonArray = null;
 		try {
 			HttpResponse response = httpClient.execute(httpGet, localContext);
 			HttpEntity entity = response.getEntity();
 			result = getASCIIContentFromEntity(entity);
-			jsonObject = new JSONObject(result);
-			// Return the body of the rest call
-			return jsonObject.getJSONArray("body"); 
+			jsonArray = new JSONArray(result);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// If something bad happens, return null
-		return null;
+		return jsonArray;
 	}
 	
 	protected String getASCIIContentFromEntity(HttpEntity entity) throws IllegalStateException, IOException {
@@ -194,4 +190,5 @@ public class RESTCaller {
 	public enum Website {
 		FACEBOOK, TWITTER, SOCPROX
 	}
+
 }
