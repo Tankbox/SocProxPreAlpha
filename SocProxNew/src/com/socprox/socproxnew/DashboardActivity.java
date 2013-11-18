@@ -42,8 +42,6 @@ public class DashboardActivity extends FragmentActivity implements
 	private BluetoothAdapter mBluetoothAdapter;
 	private static final int REQUEST_ENABLE_BT = 100;
 	private ProgressDialog mProgressDialog;
-	private String username;
-    private String password;
     private final static boolean d = true;
     private static String socproxUsername;
 	private ArrayAdapter<String> mScannedDevices = null;
@@ -53,19 +51,35 @@ public class DashboardActivity extends FragmentActivity implements
 	private ArrayAdapter<String> mListGames = null;
 	private IntentFilter bluetoothReceiverFilter = null;
 	
-	/**
-	 * The serialization (saved instance state) Bundle key representing the
-	 * current dropdown position.
-	 */
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
-
-	//this method fires when this screen loads
+	
+	static AsyncTask<String, Integer, Boolean> dashboardRestCaller;
+	static AsyncTask<Void, Void, ArrayAdapter<String>> dashboardBluetoothHandler;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
+		
+		dashboardRestCaller = new DashboardAsyncRestCaller();
+		dashboardBluetoothHandler = new DashboardAsyncBluetoothHandler();
+		
+		InitializeActionBar();
+		InitializeBluetoothRecieverFilters();
+		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		CheckAndEnableBluetooth();
+		InitializeProgressSpinner();
 
+		if(mBluetoothAdapter.isEnabled())
+		{
+			InitializeArrayAdapters();			
+			dashboardRestCaller.execute("");
+			dashboardBluetoothHandler.execute();
+		}
+	}
+	
+	private void InitializeActionBar()
+	{
 		// Set up the action bar to show a dropdown list.
 		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowTitleEnabled(false);
@@ -74,14 +88,15 @@ public class DashboardActivity extends FragmentActivity implements
 		// Set up the dropdown list navigation in the action bar.
 		actionBar.setListNavigationCallbacks(
 		// Specify a SpinnerAdapter to populate the dropdown list.
-				new ArrayAdapter<String>(actionBar.getThemedContext(),
-						android.R.layout.simple_list_item_1,
-						android.R.id.text1, new String[] {
-								getString(R.string.challenge_section),
-								getString(R.string.stats_section), }), this);
-
-// -- Joe's code starts here -- //
-
+					new ArrayAdapter<String>(actionBar.getThemedContext(),
+							android.R.layout.simple_list_item_1,
+							android.R.id.text1, new String[] {
+									getString(R.string.challenge_section),
+									getString(R.string.stats_section), }), this);
+	}
+	
+	private void InitializeBluetoothRecieverFilters()
+	{
 		// Register the BroadcastReceiver
 		bluetoothReceiverFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		bluetoothReceiverFilter.addAction(BluetoothDevice.ACTION_UUID);
@@ -89,24 +104,10 @@ public class DashboardActivity extends FragmentActivity implements
 		bluetoothReceiverFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 		registerReceiver(mReceiver, bluetoothReceiverFilter); 	// Don't forget to unregister
 																// during onDestroy
-		// Get local Bluetooth adapter
-		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		CheckAndEnableBluetooth();
-		if(mBluetoothAdapter.isEnabled())
-		{
-			InitializeArrayAdapters();
-			ScanForPlayers();
-		}
-			// This code sets the Play button to INVISIBLE and then after 12 seconds
-		// (the length of time needed to scan for player) it sets it to VISIBLE
-//		findViewById(R.id.playButton).setVisibility(View.INVISIBLE);
-//		findViewById(R.id.playButton).postDelayed(new Runnable() {
-//			public void run() {
-//				findViewById(R.id.playButton).setVisibility(View.VISIBLE);
-//			}
-//		}, 12000);			
-		
-		// -- Not quite sure what this does just yet -- //
+	}
+	
+	private void InitializeProgressSpinner()
+	{
 		mProgressDialog = new ProgressDialog(DashboardActivity.this);
     	mProgressDialog.setMessage("Finding Players");
     	mProgressDialog.setIndeterminate(true);
@@ -134,7 +135,6 @@ public class DashboardActivity extends FragmentActivity implements
 					Toast.LENGTH_LONG).show();
 			finish();
 		}
-
 		// This if-else statement is a request to turn Bluetooth on
 		// The body of the 'if' section should go in the on-create after login
 		// The else section should go in the onCreate of the "Play" activity.
@@ -161,17 +161,6 @@ public class DashboardActivity extends FragmentActivity implements
 		}
 	};
 	
-	public void ScanForPlayers() {
-		// Start discovery of Bluetooth devices
-		if (!mBluetoothAdapter.isDiscovering())
-			mBluetoothAdapter.startDiscovery();
-		
-		while(mBluetoothAdapter.isDiscovering()) {
-			Log.d(DEBUG_TAG, "Scanning");
-		}
-		Log.d(DEBUG_TAG, "Finished Scanning for MAC addresses");
-	}	
-
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// Restore the previously serialized current dropdown position.
@@ -208,15 +197,7 @@ public class DashboardActivity extends FragmentActivity implements
 		return true;
 	}
 
-	/**
-	 * A dummy fragment representing a section of the app, but that simply
-	 * displays dummy text.
-	 */
 	public static class DummySectionFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
 		public static final String ARG_SECTION_NUMBER = "section_number";
 
 		public DummySectionFragment() {
@@ -279,6 +260,69 @@ public class DashboardActivity extends FragmentActivity implements
         return !error;
   	}
 	
+	private class DashboardAsyncRestCaller extends AsyncTask<String, Integer, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... sUrl) {
+        	boolean result = false;
+            return result;
+        }
+        
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog.show();
+        }
+        
+        private boolean executeREST(String call) {
+        	return true;
+      	}
+        
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if(dashboardBluetoothHandler != null && dashboardBluetoothHandler.getStatus() == AsyncTask.Status.FINISHED)
+            {
+            	//combine the two m-fin lists
+            	
+            }
+            mProgressDialog.dismiss();
+        }
+    }
 	
-
+	private class DashboardAsyncBluetoothHandler extends AsyncTask<Void, Void, ArrayAdapter<String>> {
+        @Override
+        protected ArrayAdapter<String> doInBackground(Void... sVoids) {
+        	boolean result = false;
+        	ScanForPlayers();
+            return mScannedDevices;
+        }
+        
+        public void ScanForPlayers() {
+    		// Start discovery of Bluetooth devices
+    		if (!mBluetoothAdapter.isDiscovering())
+    			mBluetoothAdapter.startDiscovery();
+    		
+    		while(mBluetoothAdapter.isDiscovering()) {
+    			Log.d(DEBUG_TAG, "Scanning");
+    		}
+    		Log.d(DEBUG_TAG, "Finished Scanning for MAC addresses");
+    	}	
+        
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog.show();
+        }
+        
+        @Override
+        protected void onPostExecute(ArrayAdapter<String> mScannedDevices) {
+            super.onPostExecute(mScannedDevices);
+            if(dashboardRestCaller != null && dashboardRestCaller.getStatus() == AsyncTask.Status.FINISHED)
+            {
+            	
+            }
+            mProgressDialog.dismiss();
+        }
+    }
+	
 }
