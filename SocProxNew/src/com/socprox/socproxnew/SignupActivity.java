@@ -123,10 +123,14 @@ public class SignupActivity extends Activity {
 //			// Make sure the manifest was properly set - comment out this line
 //			// while developing the app, then uncomment it when it's ready.
 //			GCMRegistrar.checkManifest(this);
-
-			registerReceiver(mHandleMessageReceiver, new IntentFilter(
+			
+			SignupAsyncTask signupTask = new SignupAsyncTask();
+			signupTask.execute("");
+			
+			/*
+		    registerReceiver(mHandleMessageReceiver, new IntentFilter(
 					CommonUtilities.DISPLAY_MESSAGE_ACTION));
-
+			*/
 //			// Get GCM registration id
 //			regId = GCMRegistrar.getRegistrationId(this);
 //
@@ -219,7 +223,7 @@ public class SignupActivity extends Activity {
 				result = executeREST(call);
 				
 				// register user's GCM id to db
-				ServerUtilities.register(SignupActivity.this, name, email, regId, socproxID);
+				//ServerUtilities.register(SignupActivity.this, name, email, regId, socproxID);
 				Log.d("SignupActivity", "name: " + name);
 				Log.d("SignupActivity", "email: " + email);
 				Log.d("SignupActivity", "regId: " + regId);
@@ -267,7 +271,6 @@ public class SignupActivity extends Activity {
 																			// there
 																			// is a
 																			// username
-	
 				// Signup successful
 				JSONObject jObj = new JSONObject();
 				jObj.put("username", socproxUsername);
@@ -284,11 +287,6 @@ public class SignupActivity extends Activity {
 				Log.d(DEBUG_TAG, ex.getMessage());
 			}
 		}
-
 		return !error;
-
 	}
-
-	
-	
 }

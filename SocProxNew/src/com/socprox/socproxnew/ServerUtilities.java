@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.android.gcm.GCMRegistrar;
+//import com.google.android.gcm.GCMRegistrar;
 
 public class ServerUtilities {
 private static final String TAG = "ServerUtilities";
@@ -42,13 +42,15 @@ private static final String TAG = "ServerUtilities";
         // times.
         for (int i = 1; i <= MAX_ATTEMPTS; i++) {
             Log.d(TAG, "Attempt #" + i + " to register");
-            try {
+           /* try {
+            	
             	CommonUtilities.displayMessage(context, context.getString(
                         R.string.server_registering, i, MAX_ATTEMPTS));
                 post(serverUrl, params);
                 GCMRegistrar.setRegisteredOnServer(context, true);
                 String message = context.getString(R.string.server_registered);
                 CommonUtilities.displayMessage(context, message);
+                
                 return;
             } catch (IOException e) {
                 // Here we are simplifying and retrying on any error; in a real
@@ -69,11 +71,11 @@ private static final String TAG = "ServerUtilities";
                 }
                 // increase backoff exponentially
                 backoff *= 2;
-            }
+            }*/
         }
-        String message = context.getString(R.string.server_register_error,
+       /* String message = context.getString(R.string.server_register_error,
                 MAX_ATTEMPTS);
-        CommonUtilities.displayMessage(context, message);
+        CommonUtilities.displayMessage(context, message);*/
     }
 
     /**
@@ -84,7 +86,8 @@ private static final String TAG = "ServerUtilities";
         String serverUrl = CommonUtilities.SERVER_URL + "/unregister";
         Map<String, String> params = new HashMap<String, String>();
         params.put("regId", regId);
-        try {
+        
+        /*try {
             post(serverUrl, params);
             GCMRegistrar.setRegisteredOnServer(context, false);
             String message = context.getString(R.string.server_unregistered);
@@ -98,7 +101,7 @@ private static final String TAG = "ServerUtilities";
             String message = context.getString(R.string.server_unregister_error,
                     e.getMessage());
             CommonUtilities.displayMessage(context, message);
-        }
+        }*/
     }
 
     /**
