@@ -1,6 +1,7 @@
 package com.socprox.socproxnew;
 
 
+import java.io.Console;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
@@ -87,6 +88,23 @@ public class DashboardActivity extends FragmentActivity implements
 				e.printStackTrace();
 			}
 		}
+		
+		// Save the MAC addresses into an ArrayAdapter for comparison
+		for (int i = 0; i < mScannedDevices.getCount(); ++i) {
+			for (int j = 0; j < mUsersFromServer.length(); ++j) {
+				try {
+					if (mUsersFromServer.getJSONObject(i)
+							.get("m_strMac").toString() == mScannedDevices
+							.getItem(j)) {
+						mValidPlayers.put(mUsersFromServer.getJSONObject(i));
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	
 	}
 	
 	private void InitializeActionBar()
@@ -249,24 +267,21 @@ public class DashboardActivity extends FragmentActivity implements
         
         @Override
         protected void onPostExecute(JSONArray result) {
-			if (dashboardBluetoothHandler != null
-					&& dashboardBluetoothHandler.getStatus() == AsyncTask.Status.FINISHED) {
-				// Save the MAC addresses into an ArrayAdapter for comparison
-				for (int i = 0; i < mScannedDevices.getCount(); ++i) {
-					for (int j = 0; j < mUsersFromServer.length(); ++j) {
-						try {
-							if (mUsersFromServer.getJSONObject(i)
-									.get("m_strMac").toString() == mScannedDevices
-									.getItem(j)) {
-								result.put(mUsersFromServer.getJSONObject(i));
-							}
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}
-			}
+//			// Save the MAC addresses into an ArrayAdapter for comparison
+//			for (int i = 0; i < mScannedDevices.getCount(); ++i) {
+//				for (int j = 0; j < mUsersFromServer.length(); ++j) {
+//					try {
+//						if (mUsersFromServer.getJSONObject(i)
+//								.get("m_strMac").toString() == mScannedDevices
+//								.getItem(j)) {
+//							result.put(mUsersFromServer.getJSONObject(i));
+//						}
+//					} catch (JSONException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			}
 			super.onPostExecute(result);
 			mProgressDialog.dismiss();
         }
@@ -298,24 +313,21 @@ public class DashboardActivity extends FragmentActivity implements
         
         @Override
         protected void onPostExecute(JSONArray result) {
-			if (dashboardBluetoothHandler != null
-					&& dashboardBluetoothHandler.getStatus() == AsyncTask.Status.FINISHED) {
-				// Save the MAC addresses into an ArrayAdapter for comparison
-				for (int i = 0; i < mScannedDevices.getCount(); ++i) {
-					for (int j = 0; j < mUsersFromServer.length(); ++j) {
-						try {
-							if (mUsersFromServer.getJSONObject(i)
-									.get("m_strMac").toString() == mScannedDevices
-									.getItem(j)) {
-								result.put(mUsersFromServer.getJSONObject(i));
-							}
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}
-			}
+//			// Save the MAC addresses into an ArrayAdapter for comparison
+//			for (int i = 0; i < mScannedDevices.getCount(); ++i) {
+//				for (int j = 0; j < mUsersFromServer.length(); ++j) {
+//					try {
+//						if (mUsersFromServer.getJSONObject(i)
+//								.get("m_strMac").toString() == mScannedDevices
+//								.getItem(j)) {
+//							result.put(mUsersFromServer.getJSONObject(i));
+//						}
+//					} catch (JSONException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			}
 			super.onPostExecute(result);
 			mProgressDialog.dismiss();
         }

@@ -14,8 +14,6 @@ import java.util.Map.Entry;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.android.gcm.GCMRegistrar;
-
 public class ServerUtilities {
 private static final String TAG = "ServerUtilities";
 	
@@ -42,38 +40,17 @@ private static final String TAG = "ServerUtilities";
         // times.
         for (int i = 1; i <= MAX_ATTEMPTS; i++) {
             Log.d(TAG, "Attempt #" + i + " to register");
-            try {
-            	CommonUtilities.displayMessage(context, context.getString(
-                        R.string.server_registering, i, MAX_ATTEMPTS));
-                post(serverUrl, params);
-                GCMRegistrar.setRegisteredOnServer(context, true);
-                String message = context.getString(R.string.server_registered);
-                CommonUtilities.displayMessage(context, message);
-                return;
-            } catch (IOException e) {
-                // Here we are simplifying and retrying on any error; in a real
-                // application, it should retry only on unrecoverable errors
-                // (like HTTP error code 503).
-                Log.e(TAG, "Failed to register on attempt " + i + ":" + e);
-                if (i == MAX_ATTEMPTS) {
-                    break;
-                }
-                try {
-                    Log.d(TAG, "Sleeping for " + backoff + " ms before retry");
-                    Thread.sleep(backoff);
-                } catch (InterruptedException e1) {
-                    // Activity finished before we complete - exit.
-                    Log.d(TAG, "Thread interrupted: abort remaining retries!");
-                    Thread.currentThread().interrupt();
-                    return;
-                }
-                // increase backoff exponentially
-                backoff *= 2;
-            }
+            //            	CommonUtilities.displayMessage(context, context.getString(
+//                        R.string.server_registering, i, MAX_ATTEMPTS));
+//                post(serverUrl, params);
+//                GCMRegistrar.setRegisteredOnServer(context, true);
+//                String message = context.getString(R.string.server_registered);
+//                CommonUtilities.displayMessage(context, message);
+			return;
         }
-        String message = context.getString(R.string.server_register_error,
-                MAX_ATTEMPTS);
-        CommonUtilities.displayMessage(context, message);
+//        String message = context.getString(R.string.server_register_error,
+//                MAX_ATTEMPTS);
+//        CommonUtilities.displayMessage(context, message);
     }
 
     /**
@@ -86,18 +63,18 @@ private static final String TAG = "ServerUtilities";
         params.put("regId", regId);
         try {
             post(serverUrl, params);
-            GCMRegistrar.setRegisteredOnServer(context, false);
-            String message = context.getString(R.string.server_unregistered);
-            CommonUtilities.displayMessage(context, message);
+//            GCMRegistrar.setRegisteredOnServer(context, false);
+//            String message = context.getString(R.string.server_unregistered);
+//            CommonUtilities.displayMessage(context, message);
         } catch (IOException e) {
             // At this point the device is unregistered from GCM, but still
             // registered in the server.
             // We could try to unregister again, but it is not necessary:
             // if the server tries to send a message to the device, it will get
             // a "NotRegistered" error message and should unregister the device.
-            String message = context.getString(R.string.server_unregister_error,
-                    e.getMessage());
-            CommonUtilities.displayMessage(context, message);
+//            String message = context.getString(R.string.server_unregister_error,
+//                    e.getMessage());
+//            CommonUtilities.displayMessage(context, message);
         }
     }
 
