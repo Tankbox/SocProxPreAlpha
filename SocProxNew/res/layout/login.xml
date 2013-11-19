@@ -55,7 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:onClick="onCreateAccountButtonClicked"
+        android:onClick="onSignupButtonClicked"
         android:text="@string/sign_up"
         android:textColorHint="@color/silver"
         android:textColor="@color/white" />

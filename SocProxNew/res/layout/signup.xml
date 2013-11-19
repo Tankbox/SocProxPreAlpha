@@ -51,6 +51,16 @@
 	    android:inputType="textPassword"
 	    android:imeOptions="actionSend"
 	    android:textColor="#ffffff" />
+   	
+   	<EditText
+	    android:id="@+id/password2"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_gravity="center"
+	    android:hint="@string/password_hint2"
+	    android:inputType="textPassword"
+	    android:imeOptions="actionSend"
+	    android:textColor="#ffffff" />
     
     <Button
         android:id="@+id/btn_signup"
