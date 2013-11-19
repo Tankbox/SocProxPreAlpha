@@ -4,7 +4,6 @@ package com.socprox.socproxnew;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 import com.socprox.socproxnew.RESTCaller.Website;
 
 import android.app.ActionBar;
@@ -65,6 +64,7 @@ public class DashboardActivity extends FragmentActivity implements
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
+		
 
 		// Set up the action bar to show a dropdown list.
 		final ActionBar actionBar = getActionBar();

@@ -54,6 +54,10 @@ public class LoginActivity extends Activity {
     	loginAsyncTask.execute();
     }
 	
+	public void onSignupButtonClicked(View v){
+    	this.startActivity(new Intent(LoginActivity.this, SignupActivity.class));
+    }
+	
 	private class LoginAsyncTask extends AsyncTask<String, Integer, Boolean> {
         @Override
         protected Boolean doInBackground(String... sUrl) {
