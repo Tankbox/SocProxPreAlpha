@@ -1,10 +1,11 @@
 package com.socprox.socproxnew;
 
 
+import java.util.concurrent.ExecutionException;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.socprox.socproxnew.RESTCaller.Website;
 
 import android.app.ActionBar;
 import android.app.ProgressDialog;
@@ -16,56 +17,80 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class DashboardActivity extends FragmentActivity implements
 		ActionBar.OnNavigationListener {
 
-	private final static String DEBUG_TAG = "DashboardActivity";
+	private final static String DEBUG_TAG = "LoginActivity";
 	private BluetoothAdapter mBluetoothAdapter;
 	private static final int REQUEST_ENABLE_BT = 100;
 	private ProgressDialog mProgressDialog;
-	private String username;
-    private String password;
     private final static boolean d = true;
     private static String socproxUsername;
 	private ArrayAdapter<String> mScannedDevices = null;
-	private ArrayAdapter<String> mListUsers = null;
-	private ArrayAdapter<String> mNearbyUsers_MAC = null;
-	private ArrayAdapter<String> mNearbyUsers_NAME = null;
-	private ArrayAdapter<String> mListGames = null;
 	private IntentFilter bluetoothReceiverFilter = null;
+	private JSONArray mUsersFromServer = null;
+	private JSONArray mValidPlayers = null;
 	
-	/**
-	 * The serialization (saved instance state) Bundle key representing the
-	 * current dropdown position.
-	 */
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
-
-	//this method fires when this screen loads
+	
+	static AsyncTask<String, Integer, JSONArray> dashboardRestCaller;
+	static AsyncTask<Void, Void, JSONArray> dashboardBluetoothHandler;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
 		
+		dashboardRestCaller = new DashboardAsyncRestCaller();
+		dashboardBluetoothHandler = new DashboardAsyncBluetoothHandler();
+		
+		InitializeActionBar();
+		InitializeBluetoothRecieverFilters();
+		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		CheckAndEnableBluetooth();
+		InitializeProgressSpinner();
 
+		if(mBluetoothAdapter.isEnabled())
+		{
+			InitializeArrayAdapters();			
+			dashboardRestCaller.execute("users");
+			dashboardBluetoothHandler.execute();
+			
+			try {
+				mValidPlayers = dashboardRestCaller.get();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				mValidPlayers = dashboardBluetoothHandler.get();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void InitializeActionBar()
+	{
 		// Set up the action bar to show a dropdown list.
 		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowTitleEnabled(false);
@@ -74,14 +99,15 @@ public class DashboardActivity extends FragmentActivity implements
 		// Set up the dropdown list navigation in the action bar.
 		actionBar.setListNavigationCallbacks(
 		// Specify a SpinnerAdapter to populate the dropdown list.
-				new ArrayAdapter<String>(actionBar.getThemedContext(),
-						android.R.layout.simple_list_item_1,
-						android.R.id.text1, new String[] {
-								getString(R.string.challenge_section),
-								getString(R.string.stats_section), }), this);
-
-// -- Joe's code starts here -- //
-
+					new ArrayAdapter<String>(actionBar.getThemedContext(),
+							android.R.layout.simple_list_item_1,
+							android.R.id.text1, new String[] {
+									getString(R.string.challenge_section),
+									getString(R.string.stats_section), }), this);
+	}
+	
+	private void InitializeBluetoothRecieverFilters()
+	{
 		// Register the BroadcastReceiver
 		bluetoothReceiverFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		bluetoothReceiverFilter.addAction(BluetoothDevice.ACTION_UUID);
@@ -89,44 +115,19 @@ public class DashboardActivity extends FragmentActivity implements
 		bluetoothReceiverFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 		registerReceiver(mReceiver, bluetoothReceiverFilter); 	// Don't forget to unregister
 																// during onDestroy
-		// Get local Bluetooth adapter
-		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		CheckAndEnableBluetooth();
-		if(mBluetoothAdapter.isEnabled())
-		{
-			mProgressDialog = new ProgressDialog(DashboardActivity.this);
-	    	mProgressDialog.setMessage("Finding Players");
-	    	mProgressDialog.setIndeterminate(true);
-	    	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-	    	
-			InitializeArrayAdapters();
-			ScanForPlayers();
-			mProgressDialog.dismiss();
-		}
-			// This code sets the Play button to INVISIBLE and then after 12 seconds
-		// (the length of time needed to scan for player) it sets it to VISIBLE
-//		findViewById(R.id.playButton).setVisibility(View.INVISIBLE);
-//		findViewById(R.id.playButton).postDelayed(new Runnable() {
-//			public void run() {
-//				findViewById(R.id.playButton).setVisibility(View.VISIBLE);
-//			}
-//		}, 12000);			
-		
-		// -- Not quite sure what this does just yet -- //
-
+	}
+	
+	private void InitializeProgressSpinner()
+	{
+		mProgressDialog = new ProgressDialog(DashboardActivity.this);
+    	mProgressDialog.setMessage("Logging In");
+    	mProgressDialog.setIndeterminate(true);
+    	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 	}
 	
 	private void InitializeArrayAdapters() {
 		// Initialize ArrayAdapters for comparison
 		mScannedDevices = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1);
-		mListUsers = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1);
-		mNearbyUsers_MAC = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1);
-		mNearbyUsers_NAME = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1);
-		mListGames = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1);		
 	}
 	
@@ -137,7 +138,6 @@ public class DashboardActivity extends FragmentActivity implements
 					Toast.LENGTH_LONG).show();
 			finish();
 		}
-
 		// This if-else statement is a request to turn Bluetooth on
 		// The body of the 'if' section should go in the on-create after login
 		// The else section should go in the onCreate of the "Play" activity.
@@ -150,31 +150,20 @@ public class DashboardActivity extends FragmentActivity implements
 	}
 	
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			// When discovery finds a device
-			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-				// Get the BluetoothDevice object from the Intent
-				BluetoothDevice device = intent
-						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				// Add the address to an array adapter to show in a ListView
-				mScannedDevices.add(device.getAddress());
-			}
-		}
-	};
-	
-	public void ScanForPlayers() {
-		// Start discovery of Bluetooth devices
-		if (!mBluetoothAdapter.isDiscovering())
-			mBluetoothAdapter.startDiscovery();
-		
-		while(mBluetoothAdapter.isDiscovering()) {
-			Log.d(DEBUG_TAG, "Scanning");
-		}
-		Log.d(DEBUG_TAG, "Finished Scanning for MAC addresses");
-	}	
-
+ 		@Override
+ 		public void onReceive(Context context, Intent intent) {
+ 			String action = intent.getAction();
+ 			// When discovery finds a device
+ 			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+ 				// Get the BluetoothDevice object from the Intent
+ 				BluetoothDevice device = intent
+ 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+ 				// Add the address to an array adapter to show in a ListView
+ 				mScannedDevices.add(device.getAddress());
+ 			}
+ 		}
+ 	};
+ 	
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// Restore the previously serialized current dropdown position.
@@ -211,15 +200,7 @@ public class DashboardActivity extends FragmentActivity implements
 		return true;
 	}
 
-	/**
-	 * A dummy fragment representing a section of the app, but that simply
-	 * displays dummy text.
-	 */
 	public static class DummySectionFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
 		public static final String ARG_SECTION_NUMBER = "section_number";
 
 		public DummySectionFragment() {
@@ -237,51 +218,107 @@ public class DashboardActivity extends FragmentActivity implements
 			return rootView;
 		}
 	}
-	
-	private boolean executeREST(String call) {
-		RESTCaller caller = new RESTCaller();
-		JSONObject jsonObject = caller.execute(call);
-		boolean error = false;
-      
-		try {
-			JSONObject jsonObjectBody = jsonObject.getJSONObject("body");
-			socproxUsername = jsonObjectBody.getString("m_strUsername");
-			
-			//Login successful
-			JSONObject jObj = new JSONObject();
-			jObj.put("username", socproxUsername);
-			jObj.put("userMac", jsonObjectBody.getString("m_strMac"));
-			jObj.put("realName", jsonObjectBody.getString("m_strName"));
-			jObj.put("email", jsonObjectBody.getString("m_strFacebook"));
-			User.getInstance(jObj, DashboardActivity.this);
-		} catch (JSONException ex) {
-			//If there is no m_strUsername field then there was an error (user not in database).
-			error=true;
-			ex.printStackTrace();
-			if(d) {
-				Log.d(DEBUG_TAG, "Error on REST return.");
-			}
-		}
-      
-        if(error) {
-        	try {
-	        	//Login error
-	          	String errorMessage = jsonObject.getString("message");
-	          	Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
-	        } catch (JSONException e) {
-	    		e.printStackTrace();
-	    		if(d) {
-					Log.d(DEBUG_TAG, "No error specified by REST.");
-				}
-	    	}
+
+	private class DashboardAsyncRestCaller extends AsyncTask<String, Integer, JSONArray> {
+        @Override
+        protected  JSONArray doInBackground(String... sUrl) {
+        	mUsersFromServer = executeREST(sUrl[0]);
+
+        	if(mUsersFromServer == null)
+        		return null;
+        	else
+        		return mUsersFromServer;
         }
         
-        if(d) {
-			Log.d(DEBUG_TAG, "Boolean error = " + error);
-		}
-        return !error;
-  	}
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+        
+        private JSONArray executeREST(String call) {
+        	RESTCaller caller = new RESTCaller();
+        	JSONObject users = caller.execute(call);
+        	try {
+				return users.getJSONArray("body");
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	return null;
+      	}
+        
+        @Override
+        protected void onPostExecute(JSONArray result) {
+			if (dashboardBluetoothHandler != null
+					&& dashboardBluetoothHandler.getStatus() == AsyncTask.Status.FINISHED) {
+				// Save the MAC addresses into an ArrayAdapter for comparison
+				for (int i = 0; i < mScannedDevices.getCount(); ++i) {
+					for (int j = 0; j < mUsersFromServer.length(); ++j) {
+						try {
+							if (mUsersFromServer.getJSONObject(i)
+									.get("m_strMac").toString() == mScannedDevices
+									.getItem(j)) {
+								result.put(mUsersFromServer.getJSONObject(i));
+							}
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			super.onPostExecute(result);
+			mProgressDialog.dismiss();
+        }
+    }
 	
-	
+	private class DashboardAsyncBluetoothHandler extends AsyncTask<Void, Void, JSONArray> {
+        @Override
+        protected JSONArray doInBackground(Void... sVoids) {
+        	ScanForPlayers();
+            return null;
+        }
+    	
+        public void ScanForPlayers() {
+    		// Start discovery of Bluetooth devices
+    		if (!mBluetoothAdapter.isDiscovering())
+    			mBluetoothAdapter.startDiscovery();
+    		
+    		while(mBluetoothAdapter.isDiscovering()) {
+    			Log.d(DEBUG_TAG, "Scanning");
+    		}
+    		Log.d(DEBUG_TAG, "Finished Scanning for MAC addresses");
+    	}	
+        
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog.show();
+        }
+        
+        @Override
+        protected void onPostExecute(JSONArray result) {
+			if (dashboardBluetoothHandler != null
+					&& dashboardBluetoothHandler.getStatus() == AsyncTask.Status.FINISHED) {
+				// Save the MAC addresses into an ArrayAdapter for comparison
+				for (int i = 0; i < mScannedDevices.getCount(); ++i) {
+					for (int j = 0; j < mUsersFromServer.length(); ++j) {
+						try {
+							if (mUsersFromServer.getJSONObject(i)
+									.get("m_strMac").toString() == mScannedDevices
+									.getItem(j)) {
+								result.put(mUsersFromServer.getJSONObject(i));
+							}
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			super.onPostExecute(result);
+			mProgressDialog.dismiss();
+        }
+    }
 
 }
