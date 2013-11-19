@@ -1,12 +1,11 @@
 package com.socprox.socproxnew;
 
 
+import java.util.concurrent.ExecutionException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-
-import com.socprox.socproxnew.RESTCaller.Website;
 
 import android.app.ActionBar;
 import android.app.ProgressDialog;
@@ -18,21 +17,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,16 +38,15 @@ public class DashboardActivity extends FragmentActivity implements
     private final static boolean d = true;
     private static String socproxUsername;
 	private ArrayAdapter<String> mScannedDevices = null;
-	private ArrayAdapter<String> mListUsers = null;
-	private ArrayAdapter<String> mNearbyUsers_MAC = null;
-	private ArrayAdapter<String> mNearbyUsers_NAME = null;
-	private ArrayAdapter<String> mListGames = null;
 	private IntentFilter bluetoothReceiverFilter = null;
+	private JSONArray mUsersFromServer = null;
+	private JSONArray mValidPlayers = null;
 	
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
 	
-	static AsyncTask<String, Integer, Boolean> dashboardRestCaller;
-	static AsyncTask<Void, Void, ArrayAdapter<String>> dashboardBluetoothHandler;
+	static AsyncTask<String, Integer, JSONArray> dashboardRestCaller;
+	static AsyncTask<Void, Void, JSONArray> dashboardBluetoothHandler;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
@@ -74,8 +65,27 @@ public class DashboardActivity extends FragmentActivity implements
 		if(mBluetoothAdapter.isEnabled())
 		{
 			InitializeArrayAdapters();			
-			dashboardRestCaller.execute("");
+			dashboardRestCaller.execute("users");
 			dashboardBluetoothHandler.execute();
+			
+			try {
+				mValidPlayers = dashboardRestCaller.get();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				mValidPlayers = dashboardBluetoothHandler.get();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -118,14 +128,6 @@ public class DashboardActivity extends FragmentActivity implements
 	private void InitializeArrayAdapters() {
 		// Initialize ArrayAdapters for comparison
 		mScannedDevices = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1);
-		mListUsers = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1);
-		mNearbyUsers_MAC = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1);
-		mNearbyUsers_NAME = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1);
-		mListGames = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1);		
 	}
 	
@@ -216,111 +218,65 @@ public class DashboardActivity extends FragmentActivity implements
 			return rootView;
 		}
 	}
-	
-	private class UsersAsyncTask extends AsyncTask<String, Integer, Boolean> {
-		@Override
-		protected Boolean doInBackground(String... sUrl) {
-			boolean result = false;
-			try {
-				String call = RESTCaller.getUsersCall();
-				result = executeREST(call);
-			} catch (Exception e) {
-				if(d)
-					Log.d(DEBUG_TAG, "Error on REST execution.");
-			}
-			return result;
-		}
 
-		private boolean executeREST(String call) {
-			RESTCaller caller = new RESTCaller();
-			JSONObject restCallResponse = caller.execute(call);
-			boolean error = false;
-		
-			try {
-				JSONArray arrayOfUsers = restCallResponse.getJSONArray("body");
-				for (int i = 0; i < arrayOfUsers.length(); ++i) {
-					JSONObject user = arrayOfUsers.getJSONObject(i);
-					if(!user.getString("m_strMac").isEmpty()){
-						
-					}	
-				}
-				socproxUsername = arrayOfUsers.getString("m_strUsername");
-				
-				//Login successful
-				JSONObject jObj = new JSONObject();
-				jObj.put("username", socproxUsername);
-				jObj.put("userMac", jsonObjectBody.getString("m_strMac"));
-				jObj.put("realName", jsonObjectBody.getString("m_strName"));
-				jObj.put("email", jsonObjectBody.getString("m_strFacebook"));
-				User.getInstance(jObj, DashboardActivity.this);
-			} catch (JSONException ex) {
-				//If there is no m_strUsername field then there was an error (user not in database).
-				error=true;
-				ex.printStackTrace();
-				if(d) {
-					Log.d(DEBUG_TAG, "Error on REST return.");
-				}
-			}
-		
-		    if(error) {
-		    	try {
-		        	//Login error
-		          	String errorMessage = jsonObject.getString("message");
-		          	Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
-		        } catch (JSONException e) {
-		    		e.printStackTrace();
-		    		if(d) {
-						Log.d(DEBUG_TAG, "No error specified by REST.");
-					}
-		    	}
-		    }
-		    
-		    if(d) {
-				Log.d(DEBUG_TAG, "Boolean error = " + error);
-			}
-		    return !error;
-		}
-<<<<<<< HEAD
-	}
-=======
-        return !error;
-  	}
-	
-	private class DashboardAsyncRestCaller extends AsyncTask<String, Integer, Boolean> {
+	private class DashboardAsyncRestCaller extends AsyncTask<String, Integer, JSONArray> {
         @Override
-        protected Boolean doInBackground(String... sUrl) {
-        	boolean result = false;
-            return result;
+        protected  JSONArray doInBackground(String... sUrl) {
+        	mUsersFromServer = executeREST(sUrl[0]);
+
+        	if(mUsersFromServer == null)
+        		return null;
+        	else
+        		return mUsersFromServer;
         }
         
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog.show();
         }
         
-        private boolean executeREST(String call) {
-        	return true;
+        private JSONArray executeREST(String call) {
+        	RESTCaller caller = new RESTCaller();
+        	JSONObject users = caller.execute(call);
+        	try {
+				return users.getJSONArray("body");
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	return null;
       	}
         
         @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-            if(dashboardBluetoothHandler != null && dashboardBluetoothHandler.getStatus() == AsyncTask.Status.FINISHED)
-            {
-            	//combine the two m-fin lists
-            	
-            }
-            mProgressDialog.dismiss();
+        protected void onPostExecute(JSONArray result) {
+			if (dashboardBluetoothHandler != null
+					&& dashboardBluetoothHandler.getStatus() == AsyncTask.Status.FINISHED) {
+				// Save the MAC addresses into an ArrayAdapter for comparison
+				for (int i = 0; i < mScannedDevices.getCount(); ++i) {
+					for (int j = 0; j < mUsersFromServer.length(); ++j) {
+						try {
+							if (mUsersFromServer.getJSONObject(i)
+									.get("m_strMac").toString() == mScannedDevices
+									.getItem(j)) {
+								result.put(mUsersFromServer.getJSONObject(i));
+							}
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			super.onPostExecute(result);
+			mProgressDialog.dismiss();
         }
     }
 	
-	private class DashboardAsyncBluetoothHandler extends AsyncTask<Void, Void, ArrayAdapter<String>> {
+	private class DashboardAsyncBluetoothHandler extends AsyncTask<Void, Void, JSONArray> {
         @Override
-        protected ArrayAdapter<String> doInBackground(Void... sVoids) {
-        	boolean result = false;
+        protected JSONArray doInBackground(Void... sVoids) {
         	ScanForPlayers();
-            return mScannedDevices;
+            return null;
         }
         
         public void ScanForPlayers() {
@@ -341,15 +297,28 @@ public class DashboardActivity extends FragmentActivity implements
         }
         
         @Override
-        protected void onPostExecute(ArrayAdapter<String> mScannedDevices) {
-            super.onPostExecute(mScannedDevices);
-            if(dashboardRestCaller != null && dashboardRestCaller.getStatus() == AsyncTask.Status.FINISHED)
-            {
-            	
-            }
-            mProgressDialog.dismiss();
+        protected void onPostExecute(JSONArray result) {
+			if (dashboardBluetoothHandler != null
+					&& dashboardBluetoothHandler.getStatus() == AsyncTask.Status.FINISHED) {
+				// Save the MAC addresses into an ArrayAdapter for comparison
+				for (int i = 0; i < mScannedDevices.getCount(); ++i) {
+					for (int j = 0; j < mUsersFromServer.length(); ++j) {
+						try {
+							if (mUsersFromServer.getJSONObject(i)
+									.get("m_strMac").toString() == mScannedDevices
+									.getItem(j)) {
+								result.put(mUsersFromServer.getJSONObject(i));
+							}
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			super.onPostExecute(result);
+			mProgressDialog.dismiss();
         }
     }
-	
->>>>>>> master
+
 }
