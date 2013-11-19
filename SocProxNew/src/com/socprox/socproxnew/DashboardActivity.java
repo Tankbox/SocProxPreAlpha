@@ -150,20 +150,20 @@ public class DashboardActivity extends FragmentActivity implements
 	}
 	
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			// When discovery finds a device
-			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-				// Get the BluetoothDevice object from the Intent
-				BluetoothDevice device = intent
-						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				// Add the address to an array adapter to show in a ListView
-				mScannedDevices.add(device.getAddress());
-			}
-		}
-	};
-	
+ 		@Override
+ 		public void onReceive(Context context, Intent intent) {
+ 			String action = intent.getAction();
+ 			// When discovery finds a device
+ 			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+ 				// Get the BluetoothDevice object from the Intent
+ 				BluetoothDevice device = intent
+ 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+ 				// Add the address to an array adapter to show in a ListView
+ 				mScannedDevices.add(device.getAddress());
+ 			}
+ 		}
+ 	};
+ 	
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// Restore the previously serialized current dropdown position.
@@ -278,7 +278,7 @@ public class DashboardActivity extends FragmentActivity implements
         	ScanForPlayers();
             return null;
         }
-        
+    	
         public void ScanForPlayers() {
     		// Start discovery of Bluetooth devices
     		if (!mBluetoothAdapter.isDiscovering())
