@@ -28,13 +28,13 @@ public class LoginActivity extends Activity {
 	private BluetoothAdapter mBluetoothAdapter;
 	private static String socproxUsername;
 	private ProgressDialog mProgressDialog;
-	
+
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login); 				//load the login.xml
+		
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
         //hide action bar for the login screen
         ActionBar actionBar = getActionBar();
         actionBar.hide();
@@ -43,7 +43,25 @@ public class LoginActivity extends Activity {
     	mProgressDialog.setMessage("Logging In");
     	mProgressDialog.setIndeterminate(true);
     	mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    	if(CheckLoggedInUser())
+    	{
+    		startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
+    		finish();
+    	}
     }  
+	
+	private Boolean CheckLoggedInUser()
+	{
+		String s = SaveSharedPreference.getUserName(getApplicationContext());
+    	if(SaveSharedPreference.getUserName(getApplicationContext()).isEmpty())
+    	{
+    		return false;
+    	}
+    	else
+    	{
+    		return true;
+    	}
+	}
 	
 	public void onLoginButtonClicked(View v){
     	userName = ((EditText)findViewById(R.id.user_name)).getText().toString().trim();
@@ -128,7 +146,9 @@ public class LoginActivity extends Activity {
             super.onPostExecute(result);
             mProgressDialog.dismiss();
             
-            if(result){
+            if(result)
+            {
+            	SaveSharedPreference.setUserName(getApplicationContext(), userName);
             	startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
             }
             else{

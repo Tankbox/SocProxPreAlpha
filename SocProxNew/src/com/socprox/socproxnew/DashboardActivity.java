@@ -16,6 +16,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,6 +27,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,15 +53,17 @@ public class DashboardActivity extends FragmentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);		
 		setContentView(R.layout.activity_dashboard);
-		
+				
 		dashboardRestCaller = new DashboardAsyncRestCaller();
 		dashboardBluetoothHandler = new DashboardAsyncBluetoothHandler();
 		
 		InitializeActionBar();
 		InitializeBluetoothRecieverFilters();
+		
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		
 		CheckAndEnableBluetooth();
 		InitializeProgressSpinner();
 
@@ -104,11 +108,21 @@ public class DashboardActivity extends FragmentActivity implements
 				}
 			}
 		}
-	
+		
 	}
+	
+	public void onLogoutButtonClicked(View v){
+    	SaveSharedPreference.setUserName(getApplicationContext(), "");
+    	Intent home = new Intent(DashboardActivity.this, LoginActivity.class);
+    	startActivity(home);
+    }
 	
 	private void InitializeActionBar()
 	{
+		EditText userNameTextField = (EditText)findViewById(R.id.displayUserName);
+		userNameTextField.setText("Welcome " + SaveSharedPreference.getUserName(getApplicationContext()));
+		
+		String s = SaveSharedPreference.getUserName(getApplicationContext());
 		// Set up the action bar to show a dropdown list.
 		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowTitleEnabled(false);
