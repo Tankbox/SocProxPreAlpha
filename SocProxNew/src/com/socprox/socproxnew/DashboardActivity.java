@@ -2,7 +2,10 @@ package com.socprox.socproxnew;
 
 
 import java.io.Console;
+import java.util.Vector;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,15 +37,19 @@ public class DashboardActivity extends FragmentActivity implements
 		ActionBar.OnNavigationListener {
 
 	private final static String DEBUG_TAG = "LoginActivity";
-	private BluetoothAdapter mBluetoothAdapter;
+	protected BluetoothAdapter mBluetoothAdapter;
 	private static final int REQUEST_ENABLE_BT = 100;
 	private ProgressDialog mProgressDialog;
     private final static boolean d = true;
     private static String socproxUsername;
 	private ArrayAdapter<String> mScannedDevices = null;
+	
+	private Vector<String> mBluetoothDevices = new Vector<String>();
+	private Vector<String> mValidUsers = new Vector<String>();
+
 	private IntentFilter bluetoothReceiverFilter = null;
-	private JSONArray mUsersFromServer = null;
-	private JSONArray mValidPlayers = null;
+	private JSONArray mUsersFromServer = new JSONArray();
+	private JSONArray mValidPlayers = new JSONArray();
 	
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
 	
@@ -69,11 +76,11 @@ public class DashboardActivity extends FragmentActivity implements
 		if(mBluetoothAdapter.isEnabled())
 		{
 			InitializeArrayAdapters();			
-			dashboardRestCaller.execute("users");
-			dashboardBluetoothHandler.execute();
+			
+			//dashboardBluetoothHandler.execute();
 			
 			try {
-				mValidPlayers = dashboardRestCaller.get();
+				mUsersFromServer = dashboardRestCaller.execute("users").get();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -81,33 +88,22 @@ public class DashboardActivity extends FragmentActivity implements
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			try {
-				mValidPlayers = dashboardBluetoothHandler.get();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+//				mValidPlayers = dashboardBluetoothHandler.get(13000, TimeUnit.MILLISECONDS);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (ExecutionException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (TimeoutException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			StartDiscovery();
+
 		}
-		
 		// Save the MAC addresses into an ArrayAdapter for comparison
-		for (int i = 0; i < mScannedDevices.getCount(); ++i) {
-			for (int j = 0; j < mUsersFromServer.length(); ++j) {
-				try {
-					if (mUsersFromServer.getJSONObject(i)
-							.get("m_strMac").toString() == mScannedDevices
-							.getItem(j)) {
-						mValidPlayers.put(mUsersFromServer.getJSONObject(i));
-					}
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		
 	}
 	
 	public void onLogoutButtonClicked(View v){
@@ -190,11 +186,43 @@ public class DashboardActivity extends FragmentActivity implements
  				BluetoothDevice device = intent
  						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
  				// Add the address to an array adapter to show in a ListView
+ 				mBluetoothDevices.add(device.getAddress());
  				mScannedDevices.add(device.getAddress());
  			}
+ 			else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
+            {
+ 				for (int i = 0; i < mBluetoothDevices.size(); ++i) {
+ 					String bluetoothDeviceScanned = mBluetoothDevices.elementAt(i);
+ 					for (int j = 0; j < mUsersFromServer.length(); ++j) {
+ 						try {
+ 							String userFromServer = mUsersFromServer.getJSONObject(j).get("m_strMac").toString();
+ 							if (userFromServer.equals(bluetoothDeviceScanned) && !mValidUsers.contains(bluetoothDeviceScanned))
+ 							{
+ 								mValidUsers.add(userFromServer);
+								mValidPlayers.put(mUsersFromServer.getJSONObject(j));
+ 							}
+ 						} catch (JSONException e) {
+ 							// TODO Auto-generated catch block
+ 							e.printStackTrace();
+ 						}
+ 					}
+ 				}
+ 				StartDiscovery();
+            }
  		}
  	};
  	
+ 	private void StartDiscovery(){
+
+        // If we're already discovering, stop it
+        if (mBluetoothAdapter.isDiscovering()) {
+        	mBluetoothAdapter.cancelDiscovery();
+        }
+
+        // Request discover from BluetoothAdapter
+        mBluetoothAdapter.startDiscovery();
+	}
+	
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// Restore the previously serialized current dropdown position.
