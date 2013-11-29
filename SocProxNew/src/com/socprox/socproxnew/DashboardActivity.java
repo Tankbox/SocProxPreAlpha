@@ -268,22 +268,23 @@ public class DashboardActivity extends FragmentActivity implements
 			case 1: 
 				String call = RESTCaller.userStatsCall(mBluetoothAdapter.getAddress());
 				JSONObject job = new JSONObject();
+				String challengesCompleted = null;
 				try {
 					job = fragmentRestCaller.execute(call).get();
 					JSONObject bodyOfJob = job.getJSONObject("body");
-					bodyOfJob.getString("");
+					challengesCompleted = bodyOfJob.getString("m_iChallengesCompleted");
 				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				} catch (ExecutionException e1) {
+				} catch (ExecutionException e2) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (JSONException e) {
+					e2.printStackTrace();
+				} catch (JSONException e3) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					e3.printStackTrace();
 				}
 				
-				dummyTextView.setText(mBluetoothAdapter.getAddress());
+				dummyTextView.setText(challengesCompleted);
 				break;
 			case 2: 
 				dummyTextView.setText("2");
@@ -310,15 +311,12 @@ public class DashboardActivity extends FragmentActivity implements
 	        }
 	        
 	        private JSONObject executeREST(String call) {
-	        	try {
-		        	RESTCaller caller = new RESTCaller();
-		        	JSONObject userStats = caller.execute(call);
-					return userStats;
-					// TODO Auto-generated catch block
-	        	} catch (Exception e) {
-					e.printStackTrace();
-				}
-	        	return null;
+	        	RESTCaller caller = new RESTCaller();
+	        	JSONObject userStats = caller.execute(call);
+	        	if (userStats == null)
+	        		return null;
+	        	else
+	        		return userStats;
 	      	}
 	        
 	        @Override
