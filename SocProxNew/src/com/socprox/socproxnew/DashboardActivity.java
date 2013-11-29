@@ -100,6 +100,8 @@ public class DashboardActivity extends FragmentActivity implements
 //				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
+        	Toast.makeText(DashboardActivity.this, "Looking for Players in the Area...", Toast.LENGTH_LONG).show();
+
 			StartDiscovery();
 
 		}
@@ -198,6 +200,9 @@ public class DashboardActivity extends FragmentActivity implements
  							String userFromServer = mUsersFromServer.getJSONObject(j).get("m_strMac").toString();
  							if (userFromServer.equals(bluetoothDeviceScanned) && !mValidUsers.contains(bluetoothDeviceScanned))
  							{
+ 								if(mValidUsers.isEmpty())
+ 						        	Toast.makeText(DashboardActivity.this, "Players found, incoming challenge ~~", Toast.LENGTH_SHORT).show();
+
  								mValidUsers.add(userFromServer);
 								mValidPlayers.put(mUsersFromServer.getJSONObject(j));
  							}
@@ -213,7 +218,6 @@ public class DashboardActivity extends FragmentActivity implements
  	};
  	
  	private void StartDiscovery(){
-
         // If we're already discovering, stop it
         if (mBluetoothAdapter.isDiscovering()) {
         	mBluetoothAdapter.cancelDiscovery();
