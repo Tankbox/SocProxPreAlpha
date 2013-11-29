@@ -248,7 +248,6 @@ public class DashboardActivity extends FragmentActivity implements
 		private BluetoothAdapter mBluetoothAdapter;
 		private JSONObject userStats = new JSONObject();
 		static AsyncTask<String, Integer, JSONObject> fragmentRestCaller;
-		
 
 		public DummySectionFragment() {
 			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -261,40 +260,43 @@ public class DashboardActivity extends FragmentActivity implements
 			View rootView = inflater.inflate(R.layout.fragment_dashboard_dummy,
 					container, false);
 			
-			TextView dummyTextView = (TextView) rootView
+			EditText dummyEditText = (EditText) rootView
 					.findViewById(R.id.section_label);
 			switch (getArguments().getInt(
 					ARG_SECTION_NUMBER)) {
 			case 1: 
-				String call = RESTCaller.userStatsCall(mBluetoothAdapter.getAddress());
-				JSONObject job = new JSONObject();
-				String challengesCompleted = null;
-				try {
-					job = fragmentRestCaller.execute(call).get();
-					JSONObject bodyOfJob = job.getJSONObject("body");
-					challengesCompleted = bodyOfJob.getString("m_iChallengesCompleted");
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ExecutionException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				} catch (JSONException e3) {
-					// TODO Auto-generated catch block
-					e3.printStackTrace();
+				if (dummyEditText.getText().toString().matches("")) {
+					String call = RESTCaller.userStatsCall(mBluetoothAdapter.getAddress());
+					JSONObject job = new JSONObject();
+					String challengesCompleted = null;
+					try {
+						job = fragmentRestCaller.execute(call).get();
+						JSONObject bodyOfJob = job.getJSONObject("body");
+						challengesCompleted = bodyOfJob.getString("m_iChallengesCompleted");
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (ExecutionException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					} catch (JSONException e3) {
+						// TODO Auto-generated catch block
+						e3.printStackTrace();
+					}
+					
+					dummyEditText.setText(challengesCompleted);
 				}
-				
-				dummyTextView.setText(challengesCompleted);
+				else { /* do nothing here */ } 				
 				break;
 			case 2: 
-				dummyTextView.setText("2");
+				dummyEditText.setText("2");
 				break;
 			default:
 				break;
 			}
-//			TextView dummyTextView = (TextView) rootView
+//			TextView dummyEditText = (TextView) rootView
 //					.findViewById(R.id.section_label);
-//			dummyTextView.setText(Integer.toString(getArguments().getInt(
+//			dummyEditText.setText(Integer.toString(getArguments().getInt(
 //					ARG_SECTION_NUMBER)));
 			return rootView;
 		}
