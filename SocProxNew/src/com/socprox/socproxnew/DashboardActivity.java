@@ -2,7 +2,10 @@ package com.socprox.socproxnew;
 
 
 import java.io.Console;
+import java.util.Vector;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +29,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,15 +37,19 @@ public class DashboardActivity extends FragmentActivity implements
 		ActionBar.OnNavigationListener {
 
 	private final static String DEBUG_TAG = "LoginActivity";
-	private BluetoothAdapter mBluetoothAdapter;
+	protected BluetoothAdapter mBluetoothAdapter;
 	private static final int REQUEST_ENABLE_BT = 100;
 	private ProgressDialog mProgressDialog;
     private final static boolean d = true;
     private static String socproxUsername;
 	private ArrayAdapter<String> mScannedDevices = null;
+	
+	private Vector<String> mBluetoothDevices = new Vector<String>();
+	private Vector<String> mValidUsers = new Vector<String>();
+
 	private IntentFilter bluetoothReceiverFilter = null;
-	private JSONArray mUsersFromServer = null;
-	private JSONArray mValidPlayers = null;
+	private JSONArray mUsersFromServer = new JSONArray();
+	private JSONArray mValidPlayers = new JSONArray();
 	
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
 	
@@ -51,26 +59,26 @@ public class DashboardActivity extends FragmentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);		
 		setContentView(R.layout.activity_dashboard);
-		
+				
 		dashboardRestCaller = new DashboardAsyncRestCaller();
 		dashboardBluetoothHandler = new DashboardAsyncBluetoothHandler();
 		
 		InitializeActionBar();
 		InitializeBluetoothRecieverFilters();
+		
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		
 		CheckAndEnableBluetooth();
 		InitializeProgressSpinner();
 
 		if(mBluetoothAdapter.isEnabled())
 		{
 			InitializeArrayAdapters();			
-			dashboardRestCaller.execute("users");
-			dashboardBluetoothHandler.execute();
 			
 			try {
-				dashboardRestCaller.get();
+				mUsersFromServer = dashboardRestCaller.execute("users").get();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -78,40 +86,22 @@ public class DashboardActivity extends FragmentActivity implements
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			try {
-				dashboardBluetoothHandler.get();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}	
+			StartDiscovery();
+		}
 	}
 	
-	@Override
-	protected void onResume()
-	{
-		// Save the MAC addresses into an ArrayAdapter for comparison
-		for (int i = 0; i < mScannedDevices.getCount(); ++i) {
-			for (int j = 0; j < mUsersFromServer.length(); ++j) {
-				try {
-					if (mUsersFromServer.getJSONObject(i)
-							.get("m_strMac").toString() == mScannedDevices
-							.getItem(j)) {
-						mValidPlayers.put(mUsersFromServer.getJSONObject(i));
-					}
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}		
-	}
+	public void onLogoutButtonClicked(View v){
+    	SaveSharedPreference.setUserName(getApplicationContext(), "");
+    	Intent home = new Intent(DashboardActivity.this, LoginActivity.class);
+    	startActivity(home);
+    }
 	
 	private void InitializeActionBar()
 	{
+		EditText userNameTextField = (EditText)findViewById(R.id.displayUserName);
+		userNameTextField.setText("Welcome " + SaveSharedPreference.getUserName(getApplicationContext()));
+		
+		String s = SaveSharedPreference.getUserName(getApplicationContext());
 		// Set up the action bar to show a dropdown list.
 		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowTitleEnabled(false);
@@ -120,11 +110,11 @@ public class DashboardActivity extends FragmentActivity implements
 		// Set up the dropdown list navigation in the action bar.
 		actionBar.setListNavigationCallbacks(
 		// Specify a SpinnerAdapter to populate the dropdown list.
-			new ArrayAdapter<String>(actionBar.getThemedContext(),
-				android.R.layout.simple_list_item_1,
-				android.R.id.text1, new String[] {
-					getString(R.string.challenge_section),
-					getString(R.string.stats_section), }), this);
+					new ArrayAdapter<String>(actionBar.getThemedContext(),
+							android.R.layout.simple_list_item_1,
+							android.R.id.text1, new String[] {
+									getString(R.string.stats_section),
+									getString(R.string.challenge_section), }), this);
 	}
 	
 	private void InitializeBluetoothRecieverFilters()
@@ -180,11 +170,43 @@ public class DashboardActivity extends FragmentActivity implements
  				BluetoothDevice device = intent
  						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
  				// Add the address to an array adapter to show in a ListView
+ 				mBluetoothDevices.add(device.getAddress());
  				mScannedDevices.add(device.getAddress());
  			}
+ 			else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
+            {
+ 				for (int i = 0; i < mBluetoothDevices.size(); ++i) {
+ 					String bluetoothDeviceScanned = mBluetoothDevices.elementAt(i);
+ 					for (int j = 0; j < mUsersFromServer.length(); ++j) {
+ 						try {
+ 							String userFromServer = mUsersFromServer.getJSONObject(j).get("m_strMac").toString();
+ 							if (userFromServer.equals(bluetoothDeviceScanned) && !mValidUsers.contains(bluetoothDeviceScanned))
+ 							{
+ 								mValidUsers.add(userFromServer);
+								mValidPlayers.put(mUsersFromServer.getJSONObject(j));
+ 							}
+ 						} catch (JSONException e) {
+ 							// TODO Auto-generated catch block
+ 							e.printStackTrace();
+ 						}
+ 					}
+ 				}
+ 				StartDiscovery();
+            }
  		}
  	};
  	
+ 	private void StartDiscovery(){
+
+        // If we're already discovering, stop it
+        if (mBluetoothAdapter.isDiscovering()) {
+        	mBluetoothAdapter.cancelDiscovery();
+        }
+
+        // Request discover from BluetoothAdapter
+        mBluetoothAdapter.startDiscovery();
+	}
+	
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// Restore the previously serialized current dropdown position.
@@ -223,8 +245,14 @@ public class DashboardActivity extends FragmentActivity implements
 
 	public static class DummySectionFragment extends Fragment {
 		public static final String ARG_SECTION_NUMBER = "section_number";
+		private BluetoothAdapter mBluetoothAdapter;
+		private JSONObject userStats = new JSONObject();
+		static AsyncTask<String, Integer, JSONObject> fragmentRestCaller;
+		
 
 		public DummySectionFragment() {
+			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+			fragmentRestCaller = new FragmentAsyncRestCaller();
 		}
 
 		@Override
@@ -232,12 +260,77 @@ public class DashboardActivity extends FragmentActivity implements
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_dashboard_dummy,
 					container, false);
+			
 			TextView dummyTextView = (TextView) rootView
 					.findViewById(R.id.section_label);
-			dummyTextView.setText(Integer.toString(getArguments().getInt(
-					ARG_SECTION_NUMBER)));
+			switch (getArguments().getInt(
+					ARG_SECTION_NUMBER)) {
+			case 1: 
+				String call = RESTCaller.userStatsCall(mBluetoothAdapter.getAddress());
+				JSONObject job = new JSONObject();
+				try {
+					job = fragmentRestCaller.execute(call).get();
+					JSONObject bodyOfJob = job.getJSONObject("body");
+					bodyOfJob.getString("");
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ExecutionException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				dummyTextView.setText(mBluetoothAdapter.getAddress());
+				break;
+			case 2: 
+				dummyTextView.setText("2");
+				break;
+			default:
+				break;
+			}
+//			TextView dummyTextView = (TextView) rootView
+//					.findViewById(R.id.section_label);
+//			dummyTextView.setText(Integer.toString(getArguments().getInt(
+//					ARG_SECTION_NUMBER)));
 			return rootView;
 		}
+		
+		private class FragmentAsyncRestCaller extends AsyncTask<String, Integer, JSONObject> {
+	        @Override
+	        protected  JSONObject doInBackground(String... sUrl) {
+	        	userStats = executeREST(sUrl[0]);
+
+	        	if(userStats == null)
+	        		return null;
+	        	else
+	        		return userStats;
+	        }
+	        
+	        private JSONObject executeREST(String call) {
+	        	try {
+		        	RESTCaller caller = new RESTCaller();
+		        	JSONObject userStats = caller.execute(call);
+					return userStats;
+					// TODO Auto-generated catch block
+	        	} catch (Exception e) {
+					e.printStackTrace();
+				}
+	        	return null;
+	      	}
+	        
+	        @Override
+	        protected void onPreExecute() {
+	            super.onPreExecute();
+	        }
+	        
+	        @Override
+	        protected void onPostExecute(JSONObject result) {
+				super.onPostExecute(result);
+	        }
+	    }		
 	}
 
 	private class DashboardAsyncRestCaller extends AsyncTask<String, Integer, JSONArray> {
@@ -270,21 +363,6 @@ public class DashboardActivity extends FragmentActivity implements
         
         @Override
         protected void onPostExecute(JSONArray result) {
-//			// Save the MAC addresses into an ArrayAdapter for comparison
-//			for (int i = 0; i < mScannedDevices.getCount(); ++i) {
-//				for (int j = 0; j < mUsersFromServer.length(); ++j) {
-//					try {
-//						if (mUsersFromServer.getJSONObject(i)
-//								.get("m_strMac").toString() == mScannedDevices
-//								.getItem(j)) {
-//							result.put(mUsersFromServer.getJSONObject(i));
-//						}
-//					} catch (JSONException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//			}
 			super.onPostExecute(result);
 			mProgressDialog.dismiss();
         }
@@ -316,21 +394,6 @@ public class DashboardActivity extends FragmentActivity implements
         
         @Override
         protected void onPostExecute(JSONArray result) {
-//			// Save the MAC addresses into an ArrayAdapter for comparison
-//			for (int i = 0; i < mScannedDevices.getCount(); ++i) {
-//				for (int j = 0; j < mUsersFromServer.length(); ++j) {
-//					try {
-//						if (mUsersFromServer.getJSONObject(i)
-//								.get("m_strMac").toString() == mScannedDevices
-//								.getItem(j)) {
-//							result.put(mUsersFromServer.getJSONObject(i));
-//						}
-//					} catch (JSONException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//			}
 			super.onPostExecute(result);
 			mProgressDialog.dismiss();
         }
