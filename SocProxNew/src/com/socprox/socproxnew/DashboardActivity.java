@@ -70,7 +70,7 @@ public class DashboardActivity extends FragmentActivity implements
 			dashboardBluetoothHandler.execute();
 			
 			try {
-				mValidPlayers = dashboardRestCaller.get();
+				dashboardRestCaller.get();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -79,7 +79,7 @@ public class DashboardActivity extends FragmentActivity implements
 				e.printStackTrace();
 			}
 			try {
-				mValidPlayers = dashboardBluetoothHandler.get();
+				dashboardBluetoothHandler.get();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -87,8 +87,12 @@ public class DashboardActivity extends FragmentActivity implements
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		
+		}	
+	}
+	
+	@Override
+	protected void onResume()
+	{
 		// Save the MAC addresses into an ArrayAdapter for comparison
 		for (int i = 0; i < mScannedDevices.getCount(); ++i) {
 			for (int j = 0; j < mUsersFromServer.length(); ++j) {
@@ -103,8 +107,7 @@ public class DashboardActivity extends FragmentActivity implements
 					e.printStackTrace();
 				}
 			}
-		}
-	
+		}		
 	}
 	
 	private void InitializeActionBar()
@@ -117,11 +120,11 @@ public class DashboardActivity extends FragmentActivity implements
 		// Set up the dropdown list navigation in the action bar.
 		actionBar.setListNavigationCallbacks(
 		// Specify a SpinnerAdapter to populate the dropdown list.
-					new ArrayAdapter<String>(actionBar.getThemedContext(),
-							android.R.layout.simple_list_item_1,
-							android.R.id.text1, new String[] {
-									getString(R.string.challenge_section),
-									getString(R.string.stats_section), }), this);
+			new ArrayAdapter<String>(actionBar.getThemedContext(),
+				android.R.layout.simple_list_item_1,
+				android.R.id.text1, new String[] {
+					getString(R.string.challenge_section),
+					getString(R.string.stats_section), }), this);
 	}
 	
 	private void InitializeBluetoothRecieverFilters()
