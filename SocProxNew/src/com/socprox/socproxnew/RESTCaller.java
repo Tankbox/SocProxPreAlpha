@@ -38,12 +38,14 @@ public class RESTCaller {
 		String result;
 		JSONObject jsonObject = null;
 		try {
-			if(debug) Log.d(DEBUG_TAG, "REST Call being attempted: " + finalURL);
+			if(debug)
+				Log.d(DEBUG_TAG, "REST Call being attempted: " + finalURL);
 			HttpResponse response = httpClient.execute(httpGet, localContext);
 			HttpEntity entity = response.getEntity();
 			result = getASCIIContentFromEntity(entity);
 			jsonObject = new JSONObject(result);
-			if(debug) Log.d(DEBUG_TAG, jsonObject.toString());
+			if(debug)
+				Log.d(DEBUG_TAG, jsonObject.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

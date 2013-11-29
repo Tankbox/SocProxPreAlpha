@@ -77,8 +77,6 @@ public class DashboardActivity extends FragmentActivity implements
 		{
 			InitializeArrayAdapters();			
 			
-			//dashboardBluetoothHandler.execute();
-			
 			try {
 				mUsersFromServer = dashboardRestCaller.execute("users").get();
 			} catch (InterruptedException e) {
@@ -88,22 +86,8 @@ public class DashboardActivity extends FragmentActivity implements
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-//			try {
-//				mValidPlayers = dashboardBluetoothHandler.get(13000, TimeUnit.MILLISECONDS);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (ExecutionException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (TimeoutException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
 			StartDiscovery();
-
 		}
-		// Save the MAC addresses into an ArrayAdapter for comparison
 	}
 	
 	public void onLogoutButtonClicked(View v){
@@ -262,9 +246,13 @@ public class DashboardActivity extends FragmentActivity implements
 	public static class DummySectionFragment extends Fragment {
 		public static final String ARG_SECTION_NUMBER = "section_number";
 		private BluetoothAdapter mBluetoothAdapter;
+		private JSONObject userStats = new JSONObject();
+		static AsyncTask<String, Integer, JSONObject> fragmentRestCaller;
+		
 
 		public DummySectionFragment() {
-			
+			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+			fragmentRestCaller = new FragmentAsyncRestCaller();
 		}
 
 		@Override
@@ -278,18 +266,24 @@ public class DashboardActivity extends FragmentActivity implements
 			switch (getArguments().getInt(
 					ARG_SECTION_NUMBER)) {
 			case 1: 
-				RESTCaller caller = new RESTCaller();
 				String call = RESTCaller.userStatsCall(mBluetoothAdapter.getAddress());
-				JSONObject job = caller.execute(call);
+				JSONObject job = new JSONObject();
 				try {
+					job = fragmentRestCaller.execute(call).get();
 					JSONObject bodyOfJob = job.getJSONObject("body");
 					bodyOfJob.getString("");
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ExecutionException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
-				dummyTextView.setText("1");
+				dummyTextView.setText(mBluetoothAdapter.getAddress());
 				break;
 			case 2: 
 				dummyTextView.setText("2");
@@ -303,6 +297,40 @@ public class DashboardActivity extends FragmentActivity implements
 //					ARG_SECTION_NUMBER)));
 			return rootView;
 		}
+		
+		private class FragmentAsyncRestCaller extends AsyncTask<String, Integer, JSONObject> {
+	        @Override
+	        protected  JSONObject doInBackground(String... sUrl) {
+	        	userStats = executeREST(sUrl[0]);
+
+	        	if(userStats == null)
+	        		return null;
+	        	else
+	        		return userStats;
+	        }
+	        
+	        private JSONObject executeREST(String call) {
+	        	try {
+		        	RESTCaller caller = new RESTCaller();
+		        	JSONObject userStats = caller.execute(call);
+					return userStats;
+					// TODO Auto-generated catch block
+	        	} catch (Exception e) {
+					e.printStackTrace();
+				}
+	        	return null;
+	      	}
+	        
+	        @Override
+	        protected void onPreExecute() {
+	            super.onPreExecute();
+	        }
+	        
+	        @Override
+	        protected void onPostExecute(JSONObject result) {
+				super.onPostExecute(result);
+	        }
+	    }		
 	}
 
 	private class DashboardAsyncRestCaller extends AsyncTask<String, Integer, JSONArray> {
@@ -335,21 +363,6 @@ public class DashboardActivity extends FragmentActivity implements
         
         @Override
         protected void onPostExecute(JSONArray result) {
-//			// Save the MAC addresses into an ArrayAdapter for comparison
-//			for (int i = 0; i < mScannedDevices.getCount(); ++i) {
-//				for (int j = 0; j < mUsersFromServer.length(); ++j) {
-//					try {
-//						if (mUsersFromServer.getJSONObject(i)
-//								.get("m_strMac").toString() == mScannedDevices
-//								.getItem(j)) {
-//							result.put(mUsersFromServer.getJSONObject(i));
-//						}
-//					} catch (JSONException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//			}
 			super.onPostExecute(result);
 			mProgressDialog.dismiss();
         }
@@ -381,21 +394,6 @@ public class DashboardActivity extends FragmentActivity implements
         
         @Override
         protected void onPostExecute(JSONArray result) {
-//			// Save the MAC addresses into an ArrayAdapter for comparison
-//			for (int i = 0; i < mScannedDevices.getCount(); ++i) {
-//				for (int j = 0; j < mUsersFromServer.length(); ++j) {
-//					try {
-//						if (mUsersFromServer.getJSONObject(i)
-//								.get("m_strMac").toString() == mScannedDevices
-//								.getItem(j)) {
-//							result.put(mUsersFromServer.getJSONObject(i));
-//						}
-//					} catch (JSONException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//			}
 			super.onPostExecute(result);
 			mProgressDialog.dismiss();
         }
