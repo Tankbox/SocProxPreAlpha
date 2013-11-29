@@ -133,8 +133,8 @@ public class DashboardActivity extends FragmentActivity implements
 					new ArrayAdapter<String>(actionBar.getThemedContext(),
 							android.R.layout.simple_list_item_1,
 							android.R.id.text1, new String[] {
-									getString(R.string.challenge_section),
-									getString(R.string.stats_section), }), this);
+									getString(R.string.stats_section),
+									getString(R.string.challenge_section), }), this);
 	}
 	
 	private void InitializeBluetoothRecieverFilters()
@@ -233,8 +233,10 @@ public class DashboardActivity extends FragmentActivity implements
 
 	public static class DummySectionFragment extends Fragment {
 		public static final String ARG_SECTION_NUMBER = "section_number";
+		private BluetoothAdapter mBluetoothAdapter;
 
 		public DummySectionFragment() {
+			
 		}
 
 		@Override
@@ -242,10 +244,35 @@ public class DashboardActivity extends FragmentActivity implements
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_dashboard_dummy,
 					container, false);
+			
 			TextView dummyTextView = (TextView) rootView
 					.findViewById(R.id.section_label);
-			dummyTextView.setText(Integer.toString(getArguments().getInt(
-					ARG_SECTION_NUMBER)));
+			switch (getArguments().getInt(
+					ARG_SECTION_NUMBER)) {
+			case 1: 
+				RESTCaller caller = new RESTCaller();
+				String call = RESTCaller.userStatsCall(mBluetoothAdapter.getAddress());
+				JSONObject job = caller.execute(call);
+				try {
+					JSONObject bodyOfJob = job.getJSONObject("body");
+					bodyOfJob.getString("");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				dummyTextView.setText("1");
+				break;
+			case 2: 
+				dummyTextView.setText("2");
+				break;
+			default:
+				break;
+			}
+//			TextView dummyTextView = (TextView) rootView
+//					.findViewById(R.id.section_label);
+//			dummyTextView.setText(Integer.toString(getArguments().getInt(
+//					ARG_SECTION_NUMBER)));
 			return rootView;
 		}
 	}

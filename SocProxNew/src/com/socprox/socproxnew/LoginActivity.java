@@ -17,7 +17,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /*This is the first screen after app launches which consists of the login interface*/
@@ -71,6 +73,8 @@ public class LoginActivity extends Activity {
     	LoginAsyncTask loginAsyncTask = new LoginAsyncTask();
     	loginAsyncTask.execute();
     }
+	
+	
 	
 	public void onSignupButtonClicked(View v){
     	this.startActivity(new Intent(LoginActivity.this, SignupActivity.class));
