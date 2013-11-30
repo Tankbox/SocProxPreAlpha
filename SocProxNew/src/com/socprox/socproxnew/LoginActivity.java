@@ -1,4 +1,6 @@
 package com.socprox.socproxnew;
+import java.util.EmptyStackException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -104,9 +106,13 @@ public class LoginActivity extends Activity {
         private boolean executeREST(String call) {
     		RESTCaller caller = new RESTCaller();
     		JSONObject restCallResponse = caller.execute(call);
-    		boolean error = false;
-          
-    		try {
+  	   		boolean error = false;
+          	try {
+//    			String responseMessage = restCallResponse.getString("message");
+//    			if(responseMessage.contains("Invalid Password"))
+//    			{
+//    				error = true;
+//    			}
     			JSONObject restBody = restCallResponse.getJSONObject("body");
     			socproxUsername = restBody.getString("m_strUsername");
     			
@@ -127,6 +133,7 @@ public class LoginActivity extends Activity {
     		}
           
             if(error) {
+                mProgressDialog.dismiss();
             	try {
     	        	//Login error
     	          	String errorMessage = restCallResponse.getString("message");
@@ -148,7 +155,6 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            mProgressDialog.dismiss();
             
             if(result)
             {
