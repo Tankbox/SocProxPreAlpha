@@ -98,8 +98,8 @@ public class DashboardActivity extends FragmentActivity implements
 	
 	private void InitializeActionBar()
 	{
-		EditText userNameTextField = (EditText)findViewById(R.id.displayUserName);
-		userNameTextField.setText("Welcome " + SaveSharedPreference.getUserName(getApplicationContext()));
+//		EditText userNameTextField = (EditText)findViewById(R.id.displayUserName);
+//		userNameTextField.setText("Welcome " + SaveSharedPreference.getUserName(getApplicationContext()));
 		
 		String s = SaveSharedPreference.getUserName(getApplicationContext());
 		// Set up the action bar to show a dropdown list.
@@ -244,56 +244,105 @@ public class DashboardActivity extends FragmentActivity implements
 	}
 
 	public static class DummySectionFragment extends Fragment {
+		private static final int STATS_VIEW = 1;
+		private static final int CHALLENGE_VIEW = 2;
 		public static final String ARG_SECTION_NUMBER = "section_number";
 		private BluetoothAdapter mBluetoothAdapter;
 		private JSONObject userStats = new JSONObject();
 		static AsyncTask<String, Integer, JSONObject> fragmentRestCaller;
+		private String challengesCompletedValue;
+		private String[] strGameNameArray = new String[5];
+		private String[] iTotalPointsArray = new String[5];
+		private String[] strGameDescriptionArray = new String[5];
 
 		public DummySectionFragment() {
 			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 			fragmentRestCaller = new FragmentAsyncRestCaller();
+			
+			String call = RESTCaller.userStatsCall(mBluetoothAdapter.getAddress());
+			try {
+				userStats = fragmentRestCaller.execute(call).get();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (ExecutionException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			
+			Populate();
 		}
-
+		
+		private void Populate() {
+			try {
+				challengesCompletedValue = userStats.getJSONObject("body").getString("m_iChallengesCompleted");
+				for (int i = 0; i < userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length(); ++i) {
+					strGameNameArray[i] = userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").getJSONObject(i).getString("m_strGameName");
+					iTotalPointsArray[i] = userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").getJSONObject(i).getString("m_iTotalPoints");
+					strGameDescriptionArray[i] = userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").getJSONObject(i).getString("m_strGameDescription");
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_dashboard_dummy,
 					container, false);
 			
-			EditText dummyEditText = (EditText) rootView
-					.findViewById(R.id.section_label);
-			switch (getArguments().getInt(
-					ARG_SECTION_NUMBER)) {
-			case 1: 
-				if (dummyEditText.getText().toString().matches("")) {
-					String call = RESTCaller.userStatsCall(mBluetoothAdapter.getAddress());
-					JSONObject job = new JSONObject();
-					String challengesCompleted = null;
-					try {
-						job = fragmentRestCaller.execute(call).get();
-						JSONObject bodyOfJob = job.getJSONObject("body");
-						challengesCompleted = bodyOfJob.getString("m_iChallengesCompleted");
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ExecutionException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					} catch (JSONException e3) {
-						// TODO Auto-generated catch block
-						e3.printStackTrace();
+			TextView iChallengeCompleted = (TextView) rootView.findViewById(R.id.iChallengesCompleted);
+			TextView iTotalPoints = (TextView) rootView.findViewById(R.id.iTotalPoints);
+			TextView strGameDescription = (TextView) rootView.findViewById(R.id.strGameDescription);
+			TextView iTotalPoints2 = (TextView) rootView.findViewById(R.id.iTotalPoints2);
+			TextView strGameDescription2 = (TextView) rootView.findViewById(R.id.strGameDescription2);
+			TextView iChallengeCompletedValue = (TextView) rootView.findViewById(R.id.iChallengesCompletedValue);
+			TextView strGameName = (TextView) rootView.findViewById(R.id.strGameName);
+			TextView iTotalPointsValue = (TextView) rootView.findViewById(R.id.iTotalPointsValue);
+			TextView strGameDescriptionValue = (TextView) rootView.findViewById(R.id.strGameDescriptionValue);
+			TextView strGameName2 = (TextView) rootView.findViewById(R.id.strGameName2);
+			TextView iTotalPointsValue2 = (TextView) rootView.findViewById(R.id.iTotalPointsValue2);
+			TextView strGameDescriptionValue2 = (TextView) rootView.findViewById(R.id.strGameDescriptionValue2);
+			
+			switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
+			case STATS_VIEW:				
+				iChallengeCompletedValue.setText(challengesCompletedValue);
+				try {
+					if (userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length() >= 1) {
+						strGameName.setText(strGameNameArray[0]);
+						iTotalPointsValue.setText(iTotalPointsArray[0]);
+						strGameDescriptionValue.setText(strGameDescriptionArray[0]);
 					}
-					
-					dummyEditText.setText(challengesCompleted);
-				}
-				else { /* do nothing here */ } 				
+					if (userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length() >= 2) {
+						strGameName2.setText(strGameNameArray[1]);
+						iTotalPointsValue2.setText(iTotalPointsArray[1]);
+						strGameDescriptionValue2.setText(strGameDescriptionArray[1]);			
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}				
 				break;
-			case 2: 
-				dummyEditText.setText("2");
+			case CHALLENGE_VIEW:
+				iChallengeCompleted.setVisibility(TextView.INVISIBLE);
+				iTotalPoints.setVisibility(TextView.INVISIBLE);
+				strGameDescription.setVisibility(TextView.INVISIBLE);
+				iTotalPoints2.setVisibility(TextView.INVISIBLE);
+				strGameDescription2.setVisibility(TextView.INVISIBLE);
+				iChallengeCompletedValue.setVisibility(TextView.INVISIBLE);
+				strGameName.setVisibility(TextView.INVISIBLE);
+				iTotalPointsValue.setVisibility(TextView.INVISIBLE);
+				strGameDescriptionValue.setVisibility(TextView.INVISIBLE);
+				strGameName2.setVisibility(TextView.INVISIBLE);
+				iTotalPointsValue2.setVisibility(TextView.INVISIBLE);
+				strGameDescriptionValue2.setVisibility(TextView.INVISIBLE);
 				break;
 			default:
 				break;
-			}
+			}			
+			
 //			TextView dummyEditText = (TextView) rootView
 //					.findViewById(R.id.section_label);
 //			dummyEditText.setText(Integer.toString(getArguments().getInt(
@@ -304,12 +353,12 @@ public class DashboardActivity extends FragmentActivity implements
 		private class FragmentAsyncRestCaller extends AsyncTask<String, Integer, JSONObject> {
 	        @Override
 	        protected  JSONObject doInBackground(String... sUrl) {
-	        	userStats = executeREST(sUrl[0]);
-
-	        	if(userStats == null)
+	        	JSONObject restCall = new JSONObject(); 
+	        	restCall = executeREST(sUrl[0]);
+	        	if(restCall == null)
 	        		return null;
 	        	else
-	        		return userStats;
+	        		return restCall;
 	        }
 	        
 	        private JSONObject executeREST(String call) {
