@@ -98,8 +98,8 @@ public class DashboardActivity extends FragmentActivity implements
 	
 	private void InitializeActionBar()
 	{
-		EditText userNameTextField = (EditText)findViewById(R.id.displayUserName);
-		userNameTextField.setText("Welcome " + SaveSharedPreference.getUserName(getApplicationContext()));
+//		EditText userNameTextField = (EditText)findViewById(R.id.displayUserName);
+//		userNameTextField.setText("Welcome " + SaveSharedPreference.getUserName(getApplicationContext()));
 		
 		String s = SaveSharedPreference.getUserName(getApplicationContext());
 		// Set up the action bar to show a dropdown list.
@@ -244,72 +244,82 @@ public class DashboardActivity extends FragmentActivity implements
 	}
 
 	public static class DummySectionFragment extends Fragment {
+		private static final int STATS_VIEW = 1;
+		private static final int CHALLENGE_VIEW = 2;
 		public static final String ARG_SECTION_NUMBER = "section_number";
 		private BluetoothAdapter mBluetoothAdapter;
 		private JSONObject userStats = new JSONObject();
 		static AsyncTask<String, Integer, JSONObject> fragmentRestCaller;
+		private String challengesCompletedValue;
 
 		public DummySectionFragment() {
 			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 			fragmentRestCaller = new FragmentAsyncRestCaller();
+			
+			String call = RESTCaller.userStatsCall(mBluetoothAdapter.getAddress());
+			try {
+				userStats = fragmentRestCaller.execute(call).get();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (ExecutionException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			
+			Populate();
+		}
+		
+		private void Populate() {
+			try {
+				challengesCompletedValue = userStats.getJSONObject("body").getJSONObject("m_iChallengesCompleted").toString();
+				for (int i = 0; i < userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length(); ++i) {
+					
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
+		private boolean ChangeVisibility(int frameView) {
+			switch(frameView) {
+			case STATS_VIEW:
+				/* set visibility for stats */
+				return true;
+			case CHALLENGE_VIEW:
+				/* set visibility for challenge */
+				return true;
+			default:
+				return false;
+			}
+		}
+		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_dashboard_dummy,
 					container, false);
 			
-			EditText dummyEditText = (EditText) rootView
+			/* Change visibility of the Fragment */
+			ChangeVisibility(getArguments().getInt(ARG_SECTION_NUMBER));			
+			
+			TextView dummyEditText = (TextView) rootView
 					.findViewById(R.id.section_label);
-			switch (getArguments().getInt(
-					ARG_SECTION_NUMBER)) {
-			case 1: 
-				if (dummyEditText.getText().toString().matches("")) {
-					String call = RESTCaller.userStatsCall(mBluetoothAdapter.getAddress());
-					JSONObject job = new JSONObject();
-					String challengesCompleted = null;
-					try {
-						job = fragmentRestCaller.execute(call).get();
-						JSONObject bodyOfJob = job.getJSONObject("body");
-						challengesCompleted = bodyOfJob.getString("m_iChallengesCompleted");
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ExecutionException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					} catch (JSONException e3) {
-						// TODO Auto-generated catch block
-						e3.printStackTrace();
-					}
-					
-					dummyEditText.setText(challengesCompleted);
-				}
-				else { /* do nothing here */ } 				
-				break;
-			case 2: 
-				dummyEditText.setText("2");
-				break;
-			default:
-				break;
-			}
-//			TextView dummyEditText = (TextView) rootView
-//					.findViewById(R.id.section_label);
-//			dummyEditText.setText(Integer.toString(getArguments().getInt(
-//					ARG_SECTION_NUMBER)));
+			dummyEditText.setText(Integer.toString(getArguments().getInt(
+					ARG_SECTION_NUMBER)));
 			return rootView;
 		}
 		
 		private class FragmentAsyncRestCaller extends AsyncTask<String, Integer, JSONObject> {
 	        @Override
 	        protected  JSONObject doInBackground(String... sUrl) {
-	        	userStats = executeREST(sUrl[0]);
-
-	        	if(userStats == null)
+	        	JSONObject restCall = new JSONObject(); 
+	        	restCall = executeREST(sUrl[0]);
+	        	if(restCall == null)
 	        		return null;
 	        	else
-	        		return userStats;
+	        		return restCall;
 	        }
 	        
 	        private JSONObject executeREST(String call) {
