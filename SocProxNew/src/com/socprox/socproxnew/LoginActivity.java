@@ -76,8 +76,6 @@ public class LoginActivity extends Activity {
     	loginAsyncTask.execute();
     }
 	
-	
-	
 	public void onSignupButtonClicked(View v){
     	this.startActivity(new Intent(LoginActivity.this, SignupActivity.class));
     }
