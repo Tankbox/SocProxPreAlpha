@@ -63,7 +63,7 @@
                 android:layout_width="130dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:text="Test" />
+                android:text="" />
             
             <TextView
                 android:id="@+id/iTotalPoints"
@@ -111,7 +111,7 @@
 	            android:layout_width="130dp"
 	            android:layout_height="wrap_content"
 	            android:id="@+id/blank2"
-	            android:text="Test"/>
+	            android:text=""/>
             
             <TextView
                 android:id="@+id/iTotalPoints2"
