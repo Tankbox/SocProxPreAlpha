@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -27,8 +28,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,7 +52,7 @@ public class DashboardActivity extends FragmentActivity implements
 
 	private IntentFilter bluetoothReceiverFilter = null;
 	private JSONArray mUsersFromServer = new JSONArray();
-	private JSONArray mValidPlayers = new JSONArray();
+	private static JSONArray mValidPlayers = new JSONArray();
 	
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
 	
@@ -261,8 +264,23 @@ public class DashboardActivity extends FragmentActivity implements
 
 	public static class DummySectionFragment extends Fragment {
 		public static final String ARG_SECTION_NUMBER = "section_number";
+		private static final String TAG_MAC_ADDRESS = "m_strMac";
+		private BluetoothAdapter mBluetoothAdapter;
+		StringBuilder cUrlBuilder = new StringBuilder();
+		private final static String STATUS_ACCEPTED = "accepted";
+        private final static String STATUS_DENIED = "denied";
+		
+		 JSONObject challenges;
+		 private String challengeStatus;
+		 String macAdd1;
+		 String macAdd2;
+		 String challengeUrl = "http://cjcornell.com/bluegame/REST/getChallenge";
+		 String pushUrl = "http://cjcornell.com/bluegame/REST/pushChallenge/";
+		 
 
 		public DummySectionFragment() {
+			mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+			
 		}
 
 		@Override
@@ -274,7 +292,72 @@ public class DashboardActivity extends FragmentActivity implements
 					.findViewById(R.id.section_label);
 			dummyTextView.setText(Integer.toString(getArguments().getInt(
 					ARG_SECTION_NUMBER)));
+			
+			try {
+				macAdd1 = mBluetoothAdapter.getAddress(); // mac address of this user
+				
+				
+				// check if the current user has another player to play with
+				if(mValidPlayers.getJSONObject(1) != null) { 
+					macAdd2 = mValidPlayers.getJSONObject(1).getString(TAG_MAC_ADDRESS); // mac address of the player who is also playing this challenge
+					
+				    cUrlBuilder.append(challengeUrl);
+				    cUrlBuilder.append("/");
+				    cUrlBuilder.append(macAdd1);
+				    cUrlBuilder.append("/");
+				    cUrlBuilder.append(macAdd2);
+					challenges = executeREST(challengeUrl);
+					
+					//get challenge information to display on screen
+					TextView challengeName = (TextView) rootView.findViewById(R.id.challengeName);
+					challengeName.setText(challenges.getString("m_strIntName"));
+					
+					TextView challengeDesc = (TextView) rootView.findViewById(R.id.challengeDesc);
+					challengeDesc.setText(challenges.getString("m_strIntDesc"));
+					
+					
+					Button acceptButton = (Button) rootView.findViewById(R.id.btn_accept);
+					acceptButton.setText("Accept");
+					
+					acceptButton.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View arg0) {
+							// TODO Auto-generated method stub
+							// pushChallenge updates the status of the challenge in the database
+							challengeStatus = STATUS_ACCEPTED;
+						}
+						
+					});
+					
+					Button denyButton = (Button) rootView.findViewById(R.id.btn_deny);
+					denyButton.setText("Deny");
+					
+					denyButton.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							// pushChallenge updates the status of the challenge in the database
+							challengeStatus = STATUS_DENIED;
+						}
+						
+					});
+				}
+				
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			
+			
 			return rootView;
+		}
+
+		private JSONObject executeREST(String cUrl2) {
+			// TODO Auto-generated method stub
+			RESTCaller caller = new RESTCaller();
+			JSONObject challengeList = caller.execute(cUrl2);
+			return challengeList;
 		}
 	}
 
