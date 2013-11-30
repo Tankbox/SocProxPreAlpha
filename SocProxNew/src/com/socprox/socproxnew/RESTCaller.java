@@ -2,6 +2,7 @@ package com.socprox.socproxnew;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -11,9 +12,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
+
+import android.os.AsyncTask;
 
 
 public class RESTCaller {
@@ -26,18 +30,98 @@ public class RESTCaller {
     	String result = caller.execute(call);
 	 */
 	
-	static final String BASEURL = "http://www.cjcornell.com/bluegame/REST/";
+	static final String BASEURL = "http://www.cjcornell.com/bluegame/REST/";	
+	
+	private class RestCallerAsyncTaskJsonObject extends AsyncTask<String, Integer, JSONObject> {
+
+		@Override
+		protected JSONObject doInBackground(String... url) {
+			String call = url[0];
+			// Setup the http variables for the call
+			HttpClient httpClient = new DefaultHttpClient();
+			HttpContext localContext = new BasicHttpContext();
+			HttpGet httpGet = new HttpGet(call);
+			String result;
+			JSONObject jsonObject = null;
+			try {
+				if(debug) Log.d(DEBUG_TAG, "REST Call being attempted: " + call);
+				HttpResponse response = httpClient.execute(httpGet, localContext);
+				HttpEntity entity = response.getEntity();
+				result = getASCIIContentFromEntity(entity);
+				jsonObject = new JSONObject(result);
+				if(debug) Log.d(DEBUG_TAG, jsonObject.toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		 @Override
+	        protected void onPreExecute() {
+	            super.onPreExecute();
+	        }
+		
+		private JSONObject executeREST(String call) {
+        	RESTCaller caller = new RESTCaller();
+        	JSONObject jsonObj = caller.execute(call);
+        	return jsonObj;
+      	}
+		
+		protected void onPostExecute(JSONObject result) {
+			super.onPostExecute(result);
+        }
+		
+	}
+
+	private class RestCallerAsyncTaskJsonArray extends AsyncTask<String, Integer, JSONArray> {
+		
+		@Override
+		protected JSONArray doInBackground(String... url) {
+			String call = url[0];
+			// TODO Auto-generated method stub
+			// Setup the http variables for the call
+			HttpClient httpClient = new DefaultHttpClient();
+			HttpContext localContext = new BasicHttpContext();
+			HttpGet httpGet = new HttpGet(call);
+			String result;
+			JSONObject jsonObject = null;
+			try {
+				if(debug) Log.d(DEBUG_TAG, "REST Call being attempted: " + call);
+				HttpResponse response = httpClient.execute(httpGet, localContext);
+				HttpEntity entity = response.getEntity();
+				result = getASCIIContentFromEntity(entity);
+				jsonObject = new JSONObject(result);
+				if(debug) Log.d(DEBUG_TAG, jsonObject.toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			//return jsonObject;
+			return null;
+		}
+		
+		 @Override
+	        protected void onPreExecute() {
+	            super.onPreExecute();
+	        }
+		
+		private JSONArray executeREST(String call) {
+        	RESTCaller caller = new RESTCaller();
+        	JSONArray jsonArray = caller.executeToArray(call);
+        	return jsonArray;
+      	}
+		
+		protected void onPostExecute(JSONArray result) {
+			super.onPostExecute(result);
+        }
+		
+	}
 	
 	public JSONObject execute(String url) {
+		RestCallerAsyncTaskJsonObject asyncCaller = new RestCallerAsyncTaskJsonObject();
 		String finalURL = BASEURL + url;
-		
-		// Setup the http variables for the call
-		HttpClient httpClient = new DefaultHttpClient();
-		HttpContext localContext = new BasicHttpContext();
-		HttpGet httpGet = new HttpGet(finalURL);
-		String result;
-		JSONObject jsonObject = null;
 		try {
+<<<<<<< HEAD
 			if(debug)
 				Log.d(DEBUG_TAG, "REST Call being attempted: " + finalURL);
 			HttpResponse response = httpClient.execute(httpGet, localContext);
@@ -47,29 +131,65 @@ public class RESTCaller {
 			if(debug)
 				Log.d(DEBUG_TAG, jsonObject.toString());
 		} catch (Exception e) {
+=======
+			return asyncCaller.execute(finalURL).get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+>>>>>>> psomayaj
 			e.printStackTrace();
 		}
-		return jsonObject;
+		return null;
+//		// Setup the http variables for the call
+//		HttpClient httpClient = new DefaultHttpClient();
+//		HttpContext localContext = new BasicHttpContext();
+//		HttpGet httpGet = new HttpGet(finalURL);
+//		String result;
+//		JSONObject jsonObject = null;
+//		try {
+//			if(debug) Log.d(DEBUG_TAG, "REST Call being attempted: " + finalURL);
+//			HttpResponse response = httpClient.execute(httpGet, localContext);
+//			HttpEntity entity = response.getEntity();
+//			result = getASCIIContentFromEntity(entity);
+//			jsonObject = new JSONObject(result);
+//			if(debug) Log.d(DEBUG_TAG, jsonObject.toString());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		//return jsonObject;
 	}
 	
 	public JSONArray executeToArray(String url) {
 		String finalURL = BASEURL + url;
+		RestCallerAsyncTaskJsonArray asyncCaller = new RestCallerAsyncTaskJsonArray();
 		
-		// Setup the http variables for the call
-		HttpClient httpClient = new DefaultHttpClient();
-		HttpContext localContext = new BasicHttpContext();
-		HttpGet httpGet = new HttpGet(finalURL);
-		String result;
-		JSONArray jsonArray = null;
 		try {
-			HttpResponse response = httpClient.execute(httpGet, localContext);
-			HttpEntity entity = response.getEntity();
-			result = getASCIIContentFromEntity(entity);
-			jsonArray = new JSONArray(result);
-		} catch (Exception e) {
+			return asyncCaller.execute(finalURL).get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return jsonArray;
+		return null;
+		// Setup the http variables for the call
+//		HttpClient httpClient = new DefaultHttpClient();
+//		HttpContext localContext = new BasicHttpContext();
+//		HttpGet httpGet = new HttpGet(finalURL);
+//		String result;
+//		JSONArray jsonArray = null;
+//		try {
+//			HttpResponse response = httpClient.execute(httpGet, localContext);
+//			HttpEntity entity = response.getEntity();
+//			result = getASCIIContentFromEntity(entity);
+//			jsonArray = new JSONArray(result);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return jsonArray;
 	}
 	
 	protected String getASCIIContentFromEntity(HttpEntity entity) throws IllegalStateException, IOException {
@@ -192,9 +312,12 @@ public class RESTCaller {
 		return "userStats/" + macID;
 	}
 	
+
 	//Types of website for REST calls.
 	public enum Website {
 		FACEBOOK, TWITTER, SOCPROX
 	}
+	
+	
 
 }
