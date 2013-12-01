@@ -46,7 +46,7 @@ public final class R {
         public static final int logo=0x7f020002;
     }
     public static final class id {
-        public static final int action_settings=0x7f090019;
+        public static final int action_settings=0x7f09001a;
         public static final int blank=0x7f090006;
         public static final int blank2=0x7f09000c;
         public static final int btn_fblogin=0x7f090012;
@@ -62,6 +62,7 @@ public final class R {
         public static final int iTotalPointsValue=0x7f090008;
         public static final int iTotalPointsValue2=0x7f09000e;
         public static final int imageView1=0x7f090011;
+        public static final int list=0x7f090019;
         public static final int logoutUser=0x7f090001;
         public static final int password=0x7f090014;
         public static final int password2=0x7f090018;
@@ -79,6 +80,7 @@ public final class R {
         public static final int fragment_dashboard_dummy=0x7f030002;
         public static final int login=0x7f030003;
         public static final int signup=0x7f030004;
+        public static final int stats_fragment=0x7f030005;
     }
     public static final class menu {
         public static final int dashboard=0x7f080000;
