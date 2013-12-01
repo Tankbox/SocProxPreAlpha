@@ -266,16 +266,22 @@ public class DashboardActivity extends FragmentActivity implements
 		public static final String ARG_SECTION_NUMBER = "section_number";
 		private static final String TAG_MAC_ADDRESS = "m_strMac";
 		private BluetoothAdapter mBluetoothAdapter;
-		StringBuilder cUrlBuilder = new StringBuilder();
+		
 		private final static String STATUS_ACCEPTED = "accepted";
         private final static String STATUS_DENIED = "denied";
 		
 		 JSONObject challenges;
+		 JSONObject updateChallenge;
+		 
 		 private String challengeStatus;
+		 
 		 String macAdd1;
 		 String macAdd2;
 		 String challengeUrl = "http://cjcornell.com/bluegame/REST/getChallenge";
-		 String pushUrl = "http://cjcornell.com/bluegame/REST/pushChallenge/";
+		 StringBuilder cUrlBuilder = new StringBuilder();
+		 
+		 String updateChallengeUrl = "http://cjcornell.com/bluegame/REST/updateChallenge/";
+		 StringBuilder updateUrlBuilder = new StringBuilder();
 		 
 
 		public DummySectionFragment() {
@@ -306,7 +312,9 @@ public class DashboardActivity extends FragmentActivity implements
 				    cUrlBuilder.append(macAdd1);
 				    cUrlBuilder.append("/");
 				    cUrlBuilder.append(macAdd2);
-					challenges = executeREST(challengeUrl);
+					challenges = executeGetChallengeREST(challengeUrl);
+					
+					
 					
 					//get challenge information to display on screen
 					TextView challengeName = (TextView) rootView.findViewById(R.id.challengeName);
@@ -316,16 +324,32 @@ public class DashboardActivity extends FragmentActivity implements
 					challengeDesc.setText(challenges.getString("m_strIntDesc"));
 					
 					
-					Button acceptButton = (Button) rootView.findViewById(R.id.btn_accept);
+					final Button acceptButton = (Button) rootView.findViewById(R.id.btn_accept);
 					acceptButton.setText("Accept");
 					
+					final String challengeId = challenges.getString("m_iID");
+					
 					acceptButton.setOnClickListener(new OnClickListener() {
+						
 
 						@Override
 						public void onClick(View arg0) {
 							// TODO Auto-generated method stub
 							// pushChallenge updates the status of the challenge in the database
 							challengeStatus = STATUS_ACCEPTED;
+							acceptButton.setVisibility(Button.GONE);
+							for(int i=0; i < 2; i++) {
+								if( i == 0) {
+									updateUrlBuilder.append(updateChallengeUrl);
+									updateUrlBuilder.append('/' + macAdd1 + '/' + challengeId + challengeStatus);
+									updateChallenge = executeUpdateChallengeREST(updateChallengeUrl);
+							}
+							else if( i == 1) {
+								updateUrlBuilder.append(updateChallengeUrl);
+								updateUrlBuilder.append('/' + macAdd2 + '/' + challengeId + challengeStatus);
+								updateChallenge = executeUpdateChallengeREST(updateChallengeUrl);
+								}
+							}
 						}
 						
 					});
@@ -340,6 +364,19 @@ public class DashboardActivity extends FragmentActivity implements
 							// TODO Auto-generated method stub
 							// pushChallenge updates the status of the challenge in the database
 							challengeStatus = STATUS_DENIED;
+							
+							for(int i = 0; i < 2; i++) {
+								if(i==0) {
+									updateUrlBuilder.append(updateChallengeUrl);
+									updateUrlBuilder.append('/' + macAdd1 + '/' + challengeId + challengeStatus);
+									updateChallenge = executeUpdateChallengeREST(updateChallengeUrl);
+								}
+								else if(i==1) {
+									updateUrlBuilder.append(updateChallengeUrl);
+									updateUrlBuilder.append('/' + macAdd2 + '/' + challengeId + challengeStatus);
+									updateChallenge = executeUpdateChallengeREST(updateChallengeUrl);
+								}
+							}
 						}
 						
 					});
@@ -353,11 +390,18 @@ public class DashboardActivity extends FragmentActivity implements
 			return rootView;
 		}
 
-		private JSONObject executeREST(String cUrl2) {
+		private JSONObject executeGetChallengeREST(String cUrl2) {
 			// TODO Auto-generated method stub
 			RESTCaller caller = new RESTCaller();
 			JSONObject challengeList = caller.execute(cUrl2);
 			return challengeList;
+		}
+		
+		private JSONObject executeUpdateChallengeREST(String cUrl2) {
+			// TODO Auto-generated method stub
+			RESTCaller caller = new RESTCaller();
+			JSONObject update = caller.execute(cUrl2);
+			return update;
 		}
 	}
 
