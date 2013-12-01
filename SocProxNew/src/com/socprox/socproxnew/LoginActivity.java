@@ -32,6 +32,7 @@ public class LoginActivity extends Activity {
 	private BluetoothAdapter mBluetoothAdapter;
 	private static String socproxUsername;
 	private ProgressDialog mProgressDialog;
+	private RESTCaller restServiceCaller = new RESTCaller();
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,8 +73,57 @@ public class LoginActivity extends Activity {
     	password = ((EditText)findViewById(R.id.password)).getText().toString().trim();
 
     	// execute this when the login must be fired
-    	LoginAsyncTask loginAsyncTask = new LoginAsyncTask();
-    	loginAsyncTask.execute();
+//    	LoginAsyncTask loginAsyncTask = new LoginAsyncTask();
+//    	loginAsyncTask.execute();
+    	
+    	JSONObject restCallResponse = restServiceCaller.execute(restServiceCaller.loginCall(Website.SOCPROX, mBluetoothAdapter.getAddress(), userName, password));
+    	boolean error = false;
+      	try {
+			JSONObject restBody = restCallResponse.getJSONObject("body");
+			socproxUsername = restBody.getString("m_strUsername");
+			
+			//Login successful
+			JSONObject userJsonObject = new JSONObject();
+			userJsonObject.put("username", socproxUsername);
+			userJsonObject.put("userMac", restBody.getString("m_strMac"));
+			userJsonObject.put("realName", restBody.getString("m_strName"));
+			userJsonObject.put("email", restBody.getString("m_strFacebook"));
+			User.getInstance(userJsonObject, LoginActivity.this);
+		} catch (JSONException ex) {
+			//If there is no m_strUsername field then there was an error (user not in database).
+			error=true;
+			ex.printStackTrace();
+			if(d) {
+				Log.d(DEBUG_TAG, "Error on REST return.");
+			}
+		}
+      
+        if(error) {
+            mProgressDialog.dismiss();
+        	try {
+	        	//Login error
+	          	String errorMessage = restCallResponse.getString("message");
+	          	Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_LONG).show();
+	        } catch (JSONException e) {
+	    		e.printStackTrace();
+	    		if(d) {
+					Log.d(DEBUG_TAG, "No error specified by REST.");
+				}
+	    	}
+        }
+        
+        if(d) {
+			Log.d(DEBUG_TAG, "Boolean error = " + error);
+		}
+        
+        if(!error)
+        {
+        	SaveSharedPreference.setUserName(getApplicationContext(), userName);
+        	startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
+        }
+        else{
+        	Toast.makeText(LoginActivity.this, "Login failed!", Toast.LENGTH_SHORT).show();
+        }
     }
 	
 	public void onSignupButtonClicked(View v){
@@ -85,7 +135,7 @@ public class LoginActivity extends Activity {
         protected Boolean doInBackground(String... sUrl) {
         	boolean result = false;
             try {
-            	String call = RESTCaller.loginCall(Website.SOCPROX, mBluetoothAdapter.getAddress(), userName, password);
+            	String call = restServiceCaller.loginCall(Website.SOCPROX, mBluetoothAdapter.getAddress(), userName, password);
             	result = executeREST(call);
             } catch (Exception e) {
             	if(d) {

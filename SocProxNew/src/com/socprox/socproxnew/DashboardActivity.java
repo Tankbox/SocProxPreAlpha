@@ -34,9 +34,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class DashboardActivity extends FragmentActivity implements
-		ActionBar.OnNavigationListener {
-
-	private final static String DEBUG_TAG = "LoginActivity";
+	ActionBar.OnNavigationListener {
+	private static final int STATS_VIEW = 1;
+	private static final int CHALLENGE_VIEW = 2;
+	private final static String DEBUG_TAG = "DashboardActivity";
 	protected BluetoothAdapter mBluetoothAdapter;
 	private static final int REQUEST_ENABLE_BT = 100;
 	private ProgressDialog mProgressDialog;
@@ -53,8 +54,9 @@ public class DashboardActivity extends FragmentActivity implements
 	
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
 	
-	static AsyncTask<String, Integer, JSONArray> dashboardRestCaller;
+	//static AsyncTask<String, Integer, JSONArray> dashboardRestCaller;
 	static AsyncTask<Void, Void, JSONArray> dashboardBluetoothHandler;
+	private RESTCaller restServiceCaller = new RESTCaller();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -62,7 +64,7 @@ public class DashboardActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);		
 		setContentView(R.layout.activity_dashboard);
 				
-		dashboardRestCaller = new DashboardAsyncRestCaller();
+		//dashboardRestCaller = new DashboardAsyncRestCaller();
 		dashboardBluetoothHandler = new DashboardAsyncBluetoothHandler();
 		
 		InitializeActionBar();
@@ -78,14 +80,12 @@ public class DashboardActivity extends FragmentActivity implements
 			InitializeArrayAdapters();			
 			
 			try {
-				mUsersFromServer = dashboardRestCaller.execute("users").get();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
+				mUsersFromServer = restServiceCaller.execute(RESTCaller.getUsersCall()).getJSONArray("body");
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			//mUsersFromServer = dashboardRestCaller.execute("users").get();
 			StartDiscovery();
 		}
 	}
@@ -234,7 +234,19 @@ public class DashboardActivity extends FragmentActivity implements
 	public boolean onNavigationItemSelected(int position, long id) {
 		// When the given dropdown item is selected, show its contents in the
 		// container view.
-		Fragment fragment = new DummySectionFragment();
+		Fragment fragment;
+		switch(position + 1) {
+			case STATS_VIEW:				
+				fragment = new StatsFragment();
+				break;
+			case CHALLENGE_VIEW:
+				fragment = new ChallengeFragment();
+				break;
+			default:
+				fragment = new DummySectionFragment();
+				break;
+		}
+		
 		Bundle args = new Bundle();
 		args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
 		fragment.setArguments(args);
@@ -307,40 +319,40 @@ public class DashboardActivity extends FragmentActivity implements
 			TextView strGameDescriptionValue2 = (TextView) rootView.findViewById(R.id.strGameDescriptionValue2);
 			
 			switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
-			case STATS_VIEW:				
-				iChallengeCompletedValue.setText(challengesCompletedValue);
-				try {
-					if (userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length() >= 1) {
-						strGameName.setText(strGameNameArray[0]);
-						iTotalPointsValue.setText(iTotalPointsArray[0]);
-						strGameDescriptionValue.setText(strGameDescriptionArray[0]);
-					}
-					if (userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length() >= 2) {
-						strGameName2.setText(strGameNameArray[1]);
-						iTotalPointsValue2.setText(iTotalPointsArray[1]);
-						strGameDescriptionValue2.setText(strGameDescriptionArray[1]);			
-					}
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}				
-				break;
-			case CHALLENGE_VIEW:
-				iChallengeCompleted.setVisibility(TextView.INVISIBLE);
-				iTotalPoints.setVisibility(TextView.INVISIBLE);
-				strGameDescription.setVisibility(TextView.INVISIBLE);
-				iTotalPoints2.setVisibility(TextView.INVISIBLE);
-				strGameDescription2.setVisibility(TextView.INVISIBLE);
-				iChallengeCompletedValue.setVisibility(TextView.INVISIBLE);
-				strGameName.setVisibility(TextView.INVISIBLE);
-				iTotalPointsValue.setVisibility(TextView.INVISIBLE);
-				strGameDescriptionValue.setVisibility(TextView.INVISIBLE);
-				strGameName2.setVisibility(TextView.INVISIBLE);
-				iTotalPointsValue2.setVisibility(TextView.INVISIBLE);
-				strGameDescriptionValue2.setVisibility(TextView.INVISIBLE);
-				break;
-			default:
-				break;
+				case STATS_VIEW:				
+					iChallengeCompletedValue.setText(challengesCompletedValue);
+					try {
+						if (userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length() >= 1) {
+							strGameName.setText(strGameNameArray[0]);
+							iTotalPointsValue.setText(iTotalPointsArray[0]);
+							strGameDescriptionValue.setText(strGameDescriptionArray[0]);
+						}
+						if (userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length() >= 2) {
+							strGameName2.setText(strGameNameArray[1]);
+							iTotalPointsValue2.setText(iTotalPointsArray[1]);
+							strGameDescriptionValue2.setText(strGameDescriptionArray[1]);			
+						}
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}				
+					break;
+				case CHALLENGE_VIEW:
+					iChallengeCompleted.setVisibility(TextView.INVISIBLE);
+					iTotalPoints.setVisibility(TextView.INVISIBLE);
+					strGameDescription.setVisibility(TextView.INVISIBLE);
+					iTotalPoints2.setVisibility(TextView.INVISIBLE);
+					strGameDescription2.setVisibility(TextView.INVISIBLE);
+					iChallengeCompletedValue.setVisibility(TextView.INVISIBLE);
+					strGameName.setVisibility(TextView.INVISIBLE);
+					iTotalPointsValue.setVisibility(TextView.INVISIBLE);
+					strGameDescriptionValue.setVisibility(TextView.INVISIBLE);
+					strGameName2.setVisibility(TextView.INVISIBLE);
+					iTotalPointsValue2.setVisibility(TextView.INVISIBLE);
+					strGameDescriptionValue2.setVisibility(TextView.INVISIBLE);
+					break;
+				default:
+					break;
 			}			
 			
 //			TextView dummyEditText = (TextView) rootView
