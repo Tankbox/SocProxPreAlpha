@@ -23,17 +23,9 @@ import android.os.AsyncTask;
 public class RESTCaller {
 	public static final String DEBUG_TAG = "RESTCaller";
 	public static final boolean debug = true;
-	
-	/* EXAMPLE USAGE:
-	 * String call = RESTCaller.loginCall("socprox", "ebeerman", "beerman");
-    	RESTCaller caller = new RESTCaller();
-    	String result = caller.execute(call);
-	 */
-	
 	static final String BASEURL = "http://www.cjcornell.com/bluegame/REST/";	
 	
 	private class RestCallerAsyncTaskJsonObject extends AsyncTask<String, Integer, JSONObject> {
-
 		@Override
 		protected JSONObject doInBackground(String... url) {
 			String call = url[0];
@@ -69,12 +61,6 @@ public class RESTCaller {
         protected void onPreExecute() {
             super.onPreExecute();
         }
-		
-		private JSONObject executeREST(String call) {
-        	RESTCaller caller = new RESTCaller();
-        	JSONObject jsonObj = caller.execute(call);
-        	return jsonObj;
-      	}
 		
 		protected void onPostExecute(JSONObject result) {
 			super.onPostExecute(result);
@@ -119,12 +105,6 @@ public class RESTCaller {
             super.onPreExecute();
         }
 		
-		private JSONArray executeREST(String call) {
-        	RESTCaller caller = new RESTCaller();
-        	JSONArray jsonArray = caller.executeToArray(call);
-        	return jsonArray;
-      	}
-		
 		protected void onPostExecute(JSONArray result) {
 			super.onPostExecute(result);
         }
@@ -133,6 +113,7 @@ public class RESTCaller {
 	public JSONObject execute(String url) {
 		RestCallerAsyncTaskJsonObject asyncCaller = new RestCallerAsyncTaskJsonObject();
 		String finalURL = BASEURL + url;
+		
 		try {
 			return asyncCaller.execute(finalURL).get();
 		} catch (InterruptedException e) {
@@ -296,12 +277,7 @@ public class RESTCaller {
 		return "userStats/" + macID;
 	}
 	
-
-	//Types of website for REST calls.
 	public enum Website {
 		FACEBOOK, TWITTER, SOCPROX
 	}
-	
-	
-
 }

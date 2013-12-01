@@ -1,7 +1,6 @@
 package com.socprox.socproxnew;
 
 import java.util.ArrayList;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
