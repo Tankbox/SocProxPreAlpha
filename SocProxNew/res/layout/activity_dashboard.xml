@@ -23,4 +23,10 @@
         android:layout_gravity="bottom"
         android:text="Logout" />
 
+    <fragment
+        android:id="@+id/dashboardFragmentArea"
+        android:name="com.socprox.socproxnew.ChallengeFragment"
+        android:layout_width="match_parent"
+        android:layout_height="416dp" />
+
 </FrameLayout>

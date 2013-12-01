@@ -1,7 +1,5 @@
 package com.socprox.socproxnew;
 
-import java.util.concurrent.ExecutionException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
