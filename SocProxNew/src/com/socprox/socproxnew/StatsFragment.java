@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Fragment;
 import android.app.ListFragment;
 import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
@@ -75,7 +76,7 @@ public class StatsFragment extends ListFragment {
 		}				
 		
 		ArrayAdapter<String> statsArrayAdapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, statsArrayList);
-		statsList.setAdapter(statsArrayAdapter);
+		setListAdapter(statsArrayAdapter);
 		return rootView;
 	}
 	
