@@ -8,53 +8,34 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <Button
-        android:id="@+id/scanButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/requestScanPrompt"
-        android:onClick="onScanClick"
-        android:text="@string/buttonContent"
-        android:textSize="@dimen/activity_horizontal_margin" />
-
-    <TextView
-        android:id="@+id/requestScanPrompt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/scanButton"
-        android:layout_alignParentTop="true"
-        android:text="@string/requestScanPromptContent"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/deviceListLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/scanButton"
-        android:layout_below="@+id/scanButton"
-        android:text="@string/listUsers"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
     <ListView
-        android:id="@+id/listView1"
+        android:id="@+id/listOfPlayers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/button1"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/deviceListLabel" >
+        android:layout_below="@+id/textPlayersPrompt" >
 
     </ListView>
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/playButton"
+        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/listView1"
-        android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/listView1"
-        android:text="@string/execute"
-    	android:onClick="onExecuteClick" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:onClick="onPlayClick"
+        android:text="@string/playButtonContent"
+        android:textSize="@dimen/playButtonTextSize" />
+
+    <TextView
+        android:id="@+id/textPlayersPrompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/listOfPlayers"
+        android:layout_alignRight="@+id/listOfPlayers"
+        android:layout_below="@+id/playButton"
+        android:text="@string/listUsers"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

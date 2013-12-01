@@ -3,12 +3,21 @@
     package="com.socprox.prealpha"
     android:versionCode="1"
     android:versionName="1.0" >
+<<<<<<< HEAD
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     
+=======
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+>>>>>>> 5350414a82321691efc9bf520669d77a5ef0742a
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="18" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -24,5 +33,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.socprox.prealpha.LobbyActivity"
+            android:label="@string/title_activity_lobby"
+            android:parentActivityName="com.socprox.prealpha.LoginActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.socprox.prealpha.LoginActivity" />
+        </activity>
     </application>
+
 </manifest>

@@ -24,7 +24,7 @@ public class RESTCaller {
 	 * String call = RESTCaller.loginCall("socprox", "ebeerman", "beerman");
     	RESTCaller caller = new RESTCaller();
     	String result = caller.execute(call);
-	 */
+	*/
 	
 	static final String BASEURL = "http://www.cjcornell.com/bluegame/REST/";
 	
@@ -57,17 +57,21 @@ public class RESTCaller {
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpContext localContext = new BasicHttpContext();
 		HttpGet httpGet = new HttpGet(finalURL);
-		String result;
-		JSONArray jsonArray = null;
+		String result = null;
+		JSONObject jsonObject = null;
+		// Get the list of addresses from the server
 		try {
 			HttpResponse response = httpClient.execute(httpGet, localContext);
 			HttpEntity entity = response.getEntity();
 			result = getASCIIContentFromEntity(entity);
-			jsonArray = new JSONArray(result);
+			jsonObject = new JSONObject(result);
+			// Return the body of the rest call
+			return jsonObject.getJSONArray("body"); 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return jsonArray;
+		// If something bad happens, return null
+		return null;
 	}
 	
 	protected String getASCIIContentFromEntity(HttpEntity entity) throws IllegalStateException, IOException {
