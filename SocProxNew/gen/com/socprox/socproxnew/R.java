@@ -46,9 +46,8 @@ public final class R {
         public static final int logo=0x7f020002;
     }
     public static final class id {
-<<<<<<< HEAD
         public static final int RelativeLayout1=0x7f090004;
-        public static final int action_settings=0x7f090020;
+        public static final int action_settings=0x7f090021;
         public static final int blank=0x7f09000d;
         public static final int blank2=0x7f090013;
         public static final int btn_accept=0x7f090009;
@@ -69,25 +68,7 @@ public final class R {
         public static final int iTotalPointsValue=0x7f09000f;
         public static final int iTotalPointsValue2=0x7f090015;
         public static final int imageView1=0x7f090018;
-=======
-        public static final int action_settings=0x7f09001a;
-        public static final int blank=0x7f090006;
-        public static final int blank2=0x7f09000c;
-        public static final int btn_fblogin=0x7f090012;
-        public static final int btn_login=0x7f090015;
-        public static final int btn_signup=0x7f090016;
-        public static final int buttonAlert=0x7f090002;
-        public static final int container=0x7f090000;
-        public static final int email=0x7f090017;
-        public static final int iChallengesCompleted=0x7f090003;
-        public static final int iChallengesCompletedValue=0x7f090004;
-        public static final int iTotalPoints=0x7f090007;
-        public static final int iTotalPoints2=0x7f09000d;
-        public static final int iTotalPointsValue=0x7f090008;
-        public static final int iTotalPointsValue2=0x7f09000e;
-        public static final int imageView1=0x7f090011;
-        public static final int list=0x7f090019;
->>>>>>> BossingHard
+        public static final int list=0x7f090020;
         public static final int logoutUser=0x7f090001;
         public static final int password=0x7f09001b;
         public static final int password2=0x7f09001f;
@@ -103,17 +84,11 @@ public final class R {
     public static final class layout {
         public static final int activity_dashboard=0x7f030000;
         public static final int alert=0x7f030001;
-<<<<<<< HEAD
         public static final int challenge_fragment=0x7f030002;
         public static final int fragment_dashboard_dummy=0x7f030003;
         public static final int login=0x7f030004;
         public static final int signup=0x7f030005;
-=======
-        public static final int fragment_dashboard_dummy=0x7f030002;
-        public static final int login=0x7f030003;
-        public static final int signup=0x7f030004;
-        public static final int stats_fragment=0x7f030005;
->>>>>>> BossingHard
+        public static final int stats_fragment=0x7f030006;
     }
     public static final class menu {
         public static final int dashboard=0x7f080000;

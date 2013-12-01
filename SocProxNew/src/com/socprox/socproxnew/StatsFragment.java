@@ -1,10 +1,6 @@
 package com.socprox.socproxnew;
 
-<<<<<<< HEAD
-=======
 import java.util.ArrayList;
-
->>>>>>> BossingHard
 import org.json.JSONException;
 import org.json.JSONObject;
 

@@ -13,15 +13,15 @@
         android:contentDescription="@string/desc_logo"
         android:src="@drawable/logo" />
 
-    <ImageButton
+<!--    <ImageButton
         android:id="@+id/btn_fblogin"
         android:contentDescription="@string/desc_fbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        <!-- android:onClick="onFBLoginButtonClicked" -->
+        ndroid:onClick="onFBLoginButtonClicked"
         android:src="@drawable/fconnect" />
-    
+-->
     <EditText
 	    android:id="@+id/user_name"
 	    android:layout_width="match_parent"
