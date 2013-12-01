@@ -31,6 +31,27 @@ public class LoginActivity extends Activity {
 
 	public void loginButtonClicked(View view) {
 		
+<<<<<<< HEAD
+		try
+		{
+			new Thread(new Runnable() {
+			    public void run() {
+			    	String username = ((EditText)findViewById(R.id.usernameEditText)).getText().toString().trim();
+					String password = ((EditText)findViewById(R.id.passwordEditText)).getText().toString().trim();
+					
+			    	WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+					WifiInfo info = manager.getConnectionInfo();
+					String address = info.getMacAddress();
+					
+			    	String call = RESTCaller.loginCall(Website.SOCPROX, address, username, password);
+			    	RESTCaller caller = new RESTCaller();
+			    	JSONArray result = caller.executeToArray(call);
+			    }
+			}).start();
+			
+		} catch(Exception e)
+		{
+=======
 		try {
 			new Thread(new Runnable() {
 			public void run() {
@@ -48,6 +69,7 @@ public class LoginActivity extends Activity {
 			}).start();
 
 		} catch(Exception e) {
+>>>>>>> 5350414a82321691efc9bf520669d77a5ef0742a
 			System.out.print(e);
 			// Need to execute username and password for REST call now
 		}

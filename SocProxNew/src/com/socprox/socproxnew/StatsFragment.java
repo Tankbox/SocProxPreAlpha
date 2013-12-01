@@ -1,20 +1,23 @@
 package com.socprox.socproxnew;
 
+<<<<<<< HEAD
+=======
+import java.util.ArrayList;
+
+>>>>>>> BossingHard
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ListFragment;
 import android.bluetooth.BluetoothAdapter;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-public class StatsFragment extends Fragment {
-	private static final int STATS_VIEW = 1;
-	private static final int CHALLENGE_VIEW = 2;
+public class StatsFragment extends ListFragment {
 	public static final String ARG_SECTION_NUMBER = "section_number";
 	private BluetoothAdapter mBluetoothAdapter;
 	private JSONObject userStats = new JSONObject();
@@ -51,43 +54,31 @@ public class StatsFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_dashboard_dummy,
+		View rootView = inflater.inflate(R.layout.stats_fragment,
 				container, false);
+		ArrayList<String> statsArrayList = new ArrayList<String>();
+		ListView statsList = (ListView) rootView.findViewById(R.id.list);
 		
-		TextView iChallengeCompleted = (TextView) rootView.findViewById(R.id.iChallengesCompleted);
-		TextView iTotalPoints = (TextView) rootView.findViewById(R.id.iTotalPoints);
-		TextView strGameDescription = (TextView) rootView.findViewById(R.id.strGameDescription);
-		TextView iTotalPoints2 = (TextView) rootView.findViewById(R.id.iTotalPoints2);
-		TextView strGameDescription2 = (TextView) rootView.findViewById(R.id.strGameDescription2);
-		TextView iChallengeCompletedValue = (TextView) rootView.findViewById(R.id.iChallengesCompletedValue);
-		TextView strGameName = (TextView) rootView.findViewById(R.id.strGameName);
-		TextView iTotalPointsValue = (TextView) rootView.findViewById(R.id.iTotalPointsValue);
-		TextView strGameDescriptionValue = (TextView) rootView.findViewById(R.id.strGameDescriptionValue);
-		TextView strGameName2 = (TextView) rootView.findViewById(R.id.strGameName2);
-		TextView iTotalPointsValue2 = (TextView) rootView.findViewById(R.id.iTotalPointsValue2);
-		TextView strGameDescriptionValue2 = (TextView) rootView.findViewById(R.id.strGameDescriptionValue2);
-					
-		iChallengeCompletedValue.setText(challengesCompletedValue);
+		statsArrayList.add(challengesCompletedValue);
 		try {
 			if (userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length() >= 1) {
-				strGameName.setText(strGameNameArray[0]);
-				iTotalPointsValue.setText(iTotalPointsArray[0]);
-				strGameDescriptionValue.setText(strGameDescriptionArray[0]);
+				statsArrayList.add(strGameNameArray[0]);
+				statsArrayList.add(iTotalPointsArray[0]);
+				statsArrayList.add(strGameDescriptionArray[0]);
+				
 			}
-			if (userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length() >= 2) {
-				strGameName2.setText(strGameNameArray[1]);
-				iTotalPointsValue2.setText(iTotalPointsArray[1]);
-				strGameDescriptionValue2.setText(strGameDescriptionArray[1]);			
+			if (userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length() >= 2) {		
+				statsArrayList.add(strGameNameArray[1]);
+				statsArrayList.add(iTotalPointsArray[1]);
+				statsArrayList.add(strGameDescriptionArray[1]);
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}				
 		
-//		TextView dummyEditText = (TextView) rootView
-//				.findViewById(R.id.section_label);
-//		dummyEditText.setText(Integer.toString(getArguments().getInt(
-//				ARG_SECTION_NUMBER)));
+		ArrayAdapter<String> statsArrayAdapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, statsArrayList);
+		statsList.setAdapter(statsArrayAdapter);
 		return rootView;
 	}
 	
