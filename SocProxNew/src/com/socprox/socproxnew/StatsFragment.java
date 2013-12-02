@@ -1,6 +1,10 @@
 package com.socprox.socproxnew;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,8 +14,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 public class StatsFragment extends Fragment {
 	public static final String ARG_SECTION_NUMBER = "section_number";
@@ -51,29 +56,29 @@ public class StatsFragment extends Fragment {
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.stats_fragment,
 				container, false);
-		ArrayList<String> statsArrayList = new ArrayList<String>();
 		ListView statsList = (ListView) rootView.findViewById(R.id.list);
+		List<Map<String, String>> statsMap = new ArrayList<Map<String, String>>();
 		
-		statsArrayList.add(challengesCompletedValue);
-		try {
-			if (userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length() >= 1) {
-				statsArrayList.add(strGameNameArray[0]);
-				statsArrayList.add(iTotalPointsArray[0]);
-				statsArrayList.add(strGameDescriptionArray[0]);
-				
+		TextView totalPoints = (TextView) rootView.findViewById(R.id.totalPointsTextView);
+		totalPoints.setText("Total Points Earned:\t\t\t" + challengesCompletedValue);
+		for (int i = 0; i < strGameNameArray.length; ++i) {
+			if (strGameNameArray[i] != null) {
+				Map<String, String> oneChallenge = new HashMap<String, String>(2);
+				String lineOne = "Description:\t\t\t\t" + strGameDescriptionArray[i] + "\n";
+				String lineTwo = "Points Earned:\t\t" + iTotalPointsArray[i];
+				oneChallenge.put("name", strGameNameArray[i]);
+				oneChallenge.put("description", lineOne + lineTwo);
+				statsMap.add(oneChallenge);
 			}
-			if (userStats.getJSONObject("body").getJSONArray("m_aUserGameStats").length() >= 2) {		
-				statsArrayList.add(strGameNameArray[1]);
-				statsArrayList.add(iTotalPointsArray[1]);
-				statsArrayList.add(strGameDescriptionArray[1]);
-			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}				
+		}
 		
-		ArrayAdapter<String> statsArrayAdapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, statsArrayList);
-		statsList.setAdapter(statsArrayAdapter);
+		SimpleAdapter adapter = new SimpleAdapter(inflater.getContext(), statsMap,
+                android.R.layout.simple_list_item_2,
+                new String[] {"name", "description"},
+                new int[] {android.R.id.text1,
+                           android.R.id.text2});			
+		
+		statsList.setAdapter(adapter);
 		return rootView;
 	}
 	
