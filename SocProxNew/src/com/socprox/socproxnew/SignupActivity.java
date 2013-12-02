@@ -9,7 +9,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,8 +25,6 @@ public class SignupActivity extends Activity {
 	private String username;
 	private String password;
 	private String confirmPassword;
-	private String name, email, regId, socproxID;
-	private SignupAsyncTask mRegisterTask;
 	private BluetoothAdapter mBluetoothAdapter;
 	private ProgressDialog mProgressDialog;
 	private RESTCaller restServiceCaller = new RESTCaller();
@@ -89,9 +86,6 @@ public class SignupActivity extends Activity {
 	public void onSignupButtonClicked(View v) {
 		username = ((EditText) findViewById(R.id.user_name)).getText()
 				.toString();
-		socproxID = username;
-		name = username;
-		email = username;
 		password = ((EditText) findViewById(R.id.password)).getText()
 				.toString();
 		confirmPassword = ((EditText) findViewById(R.id.password2)).getText()
@@ -145,7 +139,7 @@ public class SignupActivity extends Activity {
 			Toast.makeText(getBaseContext(), "Passwords must match.",
 					Toast.LENGTH_LONG).show();
 		}
-		
+
 		mProgressDialog.dismiss();
 		if (success) {
 			Intent intent = new Intent(SignupActivity.this,
@@ -180,9 +174,6 @@ public class SignupActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		if (mRegisterTask != null) {
-			mRegisterTask.cancel(true);
-		}
 		try {
 			unregisterReceiver(mHandleMessageReceiver);
 			// GCMRegistrar.onDestroy(this);
@@ -190,86 +181,5 @@ public class SignupActivity extends Activity {
 			Log.e("UnRegister Receiver Error", "> " + e.getMessage());
 		}
 		super.onDestroy();
-	}
-
-	// ==============================================================================
-	// Helper methods
-	// ==============================================================================
-
-	private class SignupAsyncTask extends AsyncTask<String, Integer, Boolean> {
-		@Override
-		protected Boolean doInBackground(String... sUrl) {
-			boolean result = false;
-			try {
-				// register user in our DB
-				String call = RESTCaller.registerCall(
-						mBluetoothAdapter.getAddress(), username, password);
-				Log.d("ASDFADSF", "call: " + call);
-				result = executeREST(call);
-
-				// register user's GCM id to db
-				// ServerUtilities.register(SignupActivity.this, name, email,
-				// regId, socproxID);
-				Log.d("SignupActivity", "name: " + name);
-				Log.d("SignupActivity", "email: " + email);
-				Log.d("SignupActivity", "regId: " + regId);
-				Log.d("SignupActivity", "socproxID: " + socproxID);
-			} catch (Exception e) {
-				Log.d("SignupAsyncTask", "Failed to register!");
-			}
-			return result;
-		}
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			mProgressDialog.show();
-		}
-
-		@Override
-		protected void onPostExecute(Boolean result) {
-			super.onPostExecute(result);
-			mProgressDialog.dismiss();
-			if (result) {
-				Intent intent = new Intent(SignupActivity.this,
-						DashboardActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
-			} else {
-				Toast.makeText(SignupActivity.this, "Account creation failed.",
-						Toast.LENGTH_SHORT).show();
-			}
-		}
-	}
-
-	private boolean executeREST(String call) {
-		RESTCaller caller = new RESTCaller();
-		JSONObject jsonObject = caller.execute(call);
-		boolean error = false;
-
-		try {
-			boolean success = jsonObject.getBoolean("success");
-			if (!success)
-				error = true;
-			else {
-				JSONObject body = jsonObject.getJSONObject("body");
-				socproxUsername = body.getString("m_strUsername");
-				// Signup successful
-				JSONObject jObj = new JSONObject();
-				jObj.put("username", socproxUsername);
-				jObj.put("userMac", body.getString("m_strMac"));
-				jObj.put("realName", body.getString("m_strName"));
-				jObj.put("email", body.getString("m_strFacebook"));
-				User.getInstance(jObj, SignupActivity.this);
-			}
-		} catch (JSONException ex) {
-			// If there is no m_strUsername field then there was an error (user
-			// not in database).
-			error = true;
-			if (debug) {
-				Log.d(DEBUG_TAG, ex.getMessage());
-			}
-		}
-		return !error;
 	}
 }
