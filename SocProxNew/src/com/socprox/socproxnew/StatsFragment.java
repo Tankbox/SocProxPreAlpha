@@ -60,7 +60,7 @@ public class StatsFragment extends Fragment {
 		List<Map<String, String>> statsMap = new ArrayList<Map<String, String>>();
 		
 		TextView totalPoints = (TextView) rootView.findViewById(R.id.totalPointsTextView);
-		totalPoints.setText("Total Points Earned:\t\t\t" + challengesCompletedValue);
+		totalPoints.setText("Total Challenges Completed:\t\t\t" + challengesCompletedValue);
 		for (int i = 0; i < strGameNameArray.length; ++i) {
 			if (strGameNameArray[i] != null) {
 				Map<String, String> oneChallenge = new HashMap<String, String>(2);
