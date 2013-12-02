@@ -244,8 +244,7 @@ public class DashboardActivity extends FragmentActivity implements
 			break;
 		case CHALLENGE_VIEW:
 			fragment = new ChallengeFragment();
-			args.putString("validPlayers", mValidPlayers.toString());
-
+			args.putString("validPlayers", mValidPlayers.toString());			
 			break;
 		default:
 			fragment = new Fragment();
