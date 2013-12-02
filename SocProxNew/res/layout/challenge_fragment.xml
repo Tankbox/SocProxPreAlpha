@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/section_label"
         android:layout_centerHorizontal="true"
-        android:text="Large Text"
+        android:text="Challenges!"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
@@ -29,7 +29,7 @@
         android:layout_alignLeft="@+id/challengeName"
         android:layout_below="@+id/section_label"
         android:layout_marginTop="116dp"
-        android:text="Medium Text"
+        android:text="Current challenge"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button
@@ -39,7 +39,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="83dp"
         android:layout_toRightOf="@+id/challengeName"
-        android:text="Button" />
+        android:text="Reject" />
 
     <Button
         android:id="@+id/btn_accept"
@@ -48,6 +48,6 @@
         android:layout_alignBaseline="@+id/btn_deny"
         android:layout_alignBottom="@+id/btn_deny"
         android:layout_toLeftOf="@+id/challengeDesc"
-        android:text="Button" />
+        android:text="Accept" />
 
 </RelativeLayout>
