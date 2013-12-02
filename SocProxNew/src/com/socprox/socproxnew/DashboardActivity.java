@@ -1,5 +1,6 @@
 package com.socprox.socproxnew;
 
+import java.util.ArrayList;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import org.json.JSONArray;
@@ -42,7 +43,7 @@ public class DashboardActivity extends FragmentActivity implements
 	private ArrayAdapter<String> mScannedDevices = null;
 
 	private Vector<String> mBluetoothDevices = new Vector<String>();
-	private Vector<String> mValidUsers = new Vector<String>();
+	private ArrayList<String> mValidUsers = new ArrayList<String>();
 
 	private IntentFilter bluetoothReceiverFilter = null;
 	private JSONArray mUsersFromServer = new JSONArray();
@@ -235,23 +236,25 @@ public class DashboardActivity extends FragmentActivity implements
 	@Override
 	public boolean onNavigationItemSelected(int navigationItemPosition, long id) {
 		Fragment fragment;
-		
+		Bundle args = new Bundle();
+
 		switch (navigationItemPosition + 1) {
 		case STATS_VIEW:
 			fragment = new StatsFragment();
 			break;
 		case CHALLENGE_VIEW:
 			fragment = new ChallengeFragment();
+			args.putString("validPlayers", mValidPlayers.toString());
+
 			break;
 		default:
 			fragment = new Fragment();
 			break;
 		}
-		Bundle args = new Bundle();
-		fragment.setArguments(args);
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.container, fragment).commit();
 		args.putInt(StatsFragment.ARG_SECTION_NUMBER, navigationItemPosition + 1);
+		fragment.setArguments(args);
 
 		return true;
 	}
