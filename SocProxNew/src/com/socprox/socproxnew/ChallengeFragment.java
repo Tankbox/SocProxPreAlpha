@@ -20,7 +20,7 @@ public class ChallengeFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_dashboard_dummy,
+		View rootView = inflater.inflate(R.layout.challenge_fragment,
 				container, false);
 		return rootView;
 	}

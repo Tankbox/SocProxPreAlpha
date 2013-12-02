@@ -59,9 +59,6 @@ public class DashboardActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
 		
-		//dashboardRestCaller = new DashboardAsyncRestCaller();
-		//dashboardBluetoothHandler = new DashboardAsyncBluetoothHandler();
-		
 		InitializeActionBar();
 		InitializeBluetoothRecieverFilters();
 
