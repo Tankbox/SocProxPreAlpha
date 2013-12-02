@@ -1,12 +1,15 @@
 package com.socprox.socproxnew;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.PowerManager;
 
 public class WakeLocker {
 	private static PowerManager.WakeLock wakeLock;
 
-    public static void acquire(Context context) {
+    @SuppressLint("Wakelock")
+	@SuppressWarnings("deprecation")
+	public static void acquire(Context context) {
         if (wakeLock != null) wakeLock.release();
 
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
