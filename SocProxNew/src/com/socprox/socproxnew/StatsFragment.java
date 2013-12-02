@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Fragment;
-import android.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class StatsFragment extends ListFragment {
+public class StatsFragment extends Fragment {
 	public static final String ARG_SECTION_NUMBER = "section_number";
 	private BluetoothAdapter mBluetoothAdapter;
 	private JSONObject userStats = new JSONObject();
@@ -29,8 +28,7 @@ public class StatsFragment extends ListFragment {
 		
 		String call = RESTCaller.userStatsCall(mBluetoothAdapter.getAddress());
 		userStats = restServiceCaller.execute(call);
-		
-		
+			
 		Populate();
 	}
 	
@@ -75,7 +73,7 @@ public class StatsFragment extends ListFragment {
 		}				
 		
 		ArrayAdapter<String> statsArrayAdapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, statsArrayList);
-		setListAdapter(statsArrayAdapter);
+		statsList.setAdapter(statsArrayAdapter);
 		return rootView;
 	}
 	

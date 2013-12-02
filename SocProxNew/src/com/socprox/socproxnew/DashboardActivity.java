@@ -238,26 +238,23 @@ public class DashboardActivity extends FragmentActivity implements
 	@Override
 	public boolean onNavigationItemSelected(int navigationItemPosition, long id) {
 		Fragment fragment;
-		ListFragment listFragment;
-		Bundle args = new Bundle();
-		args.putInt(StatsFragment.ARG_SECTION_NUMBER, navigationItemPosition + 1);
+		
 		switch (navigationItemPosition + 1) {
 		case STATS_VIEW:
-			listFragment = new StatsFragment();
-			getSupportFragmentManager().beginTransaction().replace(R.id.container, listFragment).commit();
+			fragment = new StatsFragment();
 			break;
 		case CHALLENGE_VIEW:
 			fragment = new ChallengeFragment();
-			getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, fragment).commit();
 			break;
 		default:
 			fragment = new Fragment();
-			fragment.setArguments(args);
-			getSupportFragmentManager().beginTransaction()
-					.replace(R.id.container, fragment).commit();
 			break;
 		}
+		Bundle args = new Bundle();
+		fragment.setArguments(args);
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.container, fragment).commit();
+		args.putInt(StatsFragment.ARG_SECTION_NUMBER, navigationItemPosition + 1);
 
 		return true;
 	}
