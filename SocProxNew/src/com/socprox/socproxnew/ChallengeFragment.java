@@ -50,10 +50,6 @@ public class ChallengeFragment extends Fragment {
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.challenge_fragment,
 				container, false);
-		TextView dummyTextView = (TextView) rootView
-				.findViewById(R.id.section_label);
-		dummyTextView.setText(Integer.toString(getArguments().getInt(
-				ARG_SECTION_NUMBER)));
 
 		JSONArray mValidPlayers = null;
 		String serializedPlayerJsonArray = getArguments().getString("validPlayers");
