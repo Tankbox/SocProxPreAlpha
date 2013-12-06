@@ -19,7 +19,6 @@ public class ChallengeFragment extends Fragment {
 	private static final String DEBUG_TAG = "ChallengeFragment";
 
 	public static final String ARG_SECTION_NUMBER = "section_number";
-	private JSONObject userStats = new JSONObject();
 	private RESTCaller restServiceCaller = new RESTCaller();
     private static final String TAG_MAC_ADDRESS = "m_strMac";
     private BluetoothAdapter mBluetoothAdapter;

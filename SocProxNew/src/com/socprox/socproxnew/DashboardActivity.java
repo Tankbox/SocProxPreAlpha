@@ -2,13 +2,9 @@ package com.socprox.socproxnew;
 
 import java.util.ArrayList;
 import java.util.Vector;
-import java.util.concurrent.ExecutionException;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.ActionBar;
-import android.app.ListFragment;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -20,13 +16,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class DashboardActivity extends FragmentActivity implements
@@ -34,12 +26,8 @@ public class DashboardActivity extends FragmentActivity implements
 	private static final int STATS_VIEW = 1;
 	private static final int CHALLENGE_VIEW = 2;
 	private static final int REQUEST_ENABLE_BT = 100;
-	private static final String DEBUG_TAG = "DashboardActivity";
-    private final static boolean d = true;
-
 	protected BluetoothAdapter mBluetoothAdapter;
 	private ProgressDialog mProgressDialog;
-    private static String socproxUsername;
 	private ArrayAdapter<String> mScannedDevices = null;
 
 	private Vector<String> mBluetoothDevices = new Vector<String>();
@@ -59,7 +47,7 @@ public class DashboardActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_dashboard);
-		
+
 		InitializeActionBar();
 		InitializeBluetoothRecieverFilters();
 
@@ -82,19 +70,20 @@ public class DashboardActivity extends FragmentActivity implements
 			StartDiscovery();
 		}
 	}
-	
-	public void onLogoutButtonClicked(View v){
-    	SaveSharedPreference.setUserName(getApplicationContext(), "");
-    	Intent home = new Intent(DashboardActivity.this, LoginActivity.class);
-    	startActivity(home);
-    }
-	
-	private void InitializeActionBar()
-	{
-//		EditText userNameTextField = (EditText)findViewById(R.id.displayUserName);
-//		userNameTextField.setText("Welcome " + SaveSharedPreference.getUserName(getApplicationContext()));
-		
-		String socproxUsername = SaveSharedPreference.getUserName(getApplicationContext());
+
+	public void onLogoutButtonClicked(View v) {
+		SaveSharedPreference.setUserName(getApplicationContext(), "");
+		Intent home = new Intent(DashboardActivity.this, LoginActivity.class);
+		startActivity(home);
+	}
+
+	private void InitializeActionBar() {
+		// EditText userNameTextField =
+		// (EditText)findViewById(R.id.displayUserName);
+		// userNameTextField.setText("Welcome " +
+		// SaveSharedPreference.getUserName(getApplicationContext()));
+
+		SaveSharedPreference.getUserName(getApplicationContext());
 		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowTitleEnabled(false);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -244,7 +233,7 @@ public class DashboardActivity extends FragmentActivity implements
 			break;
 		case CHALLENGE_VIEW:
 			fragment = new ChallengeFragment();
-			args.putString("validPlayers", mValidPlayers.toString());			
+			args.putString("validPlayers", mValidPlayers.toString());
 			break;
 		default:
 			fragment = new Fragment();
@@ -252,7 +241,8 @@ public class DashboardActivity extends FragmentActivity implements
 		}
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.container, fragment).commit();
-		args.putInt(StatsFragment.ARG_SECTION_NUMBER, navigationItemPosition + 1);
+		args.putInt(StatsFragment.ARG_SECTION_NUMBER,
+				navigationItemPosition + 1);
 		fragment.setArguments(args);
 
 		return true;
