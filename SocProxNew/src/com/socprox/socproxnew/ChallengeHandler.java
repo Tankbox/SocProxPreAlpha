@@ -1,12 +1,19 @@
 package com.socprox.socproxnew;
 
+import java.util.ArrayList;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ChallengeHandler {
 
 	private RESTCaller restServiceCaller = new RESTCaller();
-
+	public ArrayList<ChallengeInstance> challengeInstances;
+	
+	public ChallengeHandler(){
+		challengeInstances = new ArrayList<ChallengeInstance>();
+	}
+	
 	public JSONObject GetChallengeInstance(String MAC, int challengeId) {
 		JSONObject challenge = null;
 		
@@ -24,7 +31,7 @@ public class ChallengeHandler {
 		
 		try {
 			String call = RESTCaller.updateChallengeCall(MAC,
-					Integer.parseInt(challengeInstance.getString("m_iID")),
+					challengeInstance.getInt("m_iID"),
 					"accepted");
 			updatedChallenge = restServiceCaller.execute(call);
 		} catch (NumberFormatException e) {
@@ -75,3 +82,7 @@ public class ChallengeHandler {
 			return pendingChallenges;
 	}
 }
+
+
+
+
