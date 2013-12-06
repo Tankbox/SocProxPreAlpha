@@ -72,7 +72,7 @@ public class ChallengeFragment extends Fragment {
 				challengeName.setText(challenges.getString("m_strName"));
 
 				TextView challengeDesc = (TextView) rootView.findViewById(R.id.challengeDesc);
-				challengeDesc.setText(challenges.getString("m_strIntDesc"));
+				challengeDesc.setText(challenges.getString("m_strInstr"));
 
 				final Button acceptButton = (Button) rootView.findViewById(R.id.btn_accept);
 				acceptButton.setText("Accept");
