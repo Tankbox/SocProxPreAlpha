@@ -1,7 +1,5 @@
 package com.socprox.socproxnew;
 
-import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,13 +24,8 @@ public class ChallengeFragment extends Fragment {
     private static final String TAG_MAC_ADDRESS = "m_strMac";
     private BluetoothAdapter mBluetoothAdapter;
 	
-	private final static String STATUS_ACCEPTED = "accepted";
-	private final static String STATUS_DENIED = "denied";
-    
 	JSONObject challenges;
 	JSONObject updateChallenge; 
-	private String challengeStatus;
-	 
 	String macAdd1;
 	String macAdd2;
 	String challengeUrl = "http://cjcornell.com/bluegame/REST/getChallenge";
@@ -76,15 +69,13 @@ public class ChallengeFragment extends Fragment {
 
 				// get challenge information to display on screen
 				TextView challengeName = (TextView)rootView.findViewById(R.id.challengeName);
-				challengeName.setText(challenges.getString("m_strIntName"));
+				challengeName.setText(challenges.getString("m_strName"));
 
 				TextView challengeDesc = (TextView) rootView.findViewById(R.id.challengeDesc);
 				challengeDesc.setText(challenges.getString("m_strIntDesc"));
 
 				final Button acceptButton = (Button) rootView.findViewById(R.id.btn_accept);
 				acceptButton.setText("Accept");
-
-				final String challengeId = challenges.getString("m_iID");
 
 				acceptButton.setOnClickListener(new OnClickListener() {
 
@@ -93,26 +84,15 @@ public class ChallengeFragment extends Fragment {
 						// TODO Auto-generated method stub
 						// pushChallenge updates the status of the challenge in
 						// the database
-						challengeStatus = STATUS_ACCEPTED;
+						
+						ChallengeHandler challengeHandler = new ChallengeHandler();
+						challengeHandler.ChallengeAccepted(macAdd1, challenges);
 						acceptButton.setVisibility(Button.GONE);
-						for (int i = 0; i < 2; i++) {
-							if (i == 0) {
-								updateUrlBuilder.append(updateChallengeUrl);
-								updateUrlBuilder.append('/' + macAdd1 + '/'
-										+ challengeId + challengeStatus);
-								//updateChallenge = executeUpdateChallengeREST(updateChallengeUrl);
-							} else if (i == 1) {
-								updateUrlBuilder.append(updateChallengeUrl);
-								updateUrlBuilder.append('/' + macAdd2 + '/'
-										+ challengeId + challengeStatus);
-								//updateChallenge = executeUpdateChallengeREST(updateChallengeUrl);
-							}
-						}
 					}
 
 				});
 
-				Button denyButton = (Button) rootView.findViewById(R.id.btn_deny);
+				final Button denyButton = (Button) rootView.findViewById(R.id.btn_deny);
 				denyButton.setText("Deny");
 
 				denyButton.setOnClickListener(new OnClickListener() {
@@ -122,21 +102,10 @@ public class ChallengeFragment extends Fragment {
 						// TODO Auto-generated method stub
 						// pushChallenge updates the status of the challenge in
 						// the database
-						challengeStatus = STATUS_DENIED;
-
-						for (int i = 0; i < 2; i++) {
-							if (i == 0) {
-								updateUrlBuilder.append(updateChallengeUrl);
-								updateUrlBuilder.append('/' + macAdd1 + '/'
-										+ challengeId + challengeStatus);
-								//updateChallenge = executeUpdateChallengeREST(updateChallengeUrl);
-							} else if (i == 1) {
-								updateUrlBuilder.append(updateChallengeUrl);
-								updateUrlBuilder.append('/' + macAdd2 + '/'
-										+ challengeId + challengeStatus);
-								//updateChallenge = executeUpdateChallengeREST(updateChallengeUrl);
-							}
-						}
+						
+						ChallengeHandler challengeHandler = new ChallengeHandler();
+						challengeHandler.ChallengeDenied(macAdd1, challenges);
+						denyButton.setVisibility(Button.GONE);
 					}
 
 				});
