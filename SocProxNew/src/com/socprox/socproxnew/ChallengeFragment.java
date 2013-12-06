@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -136,6 +137,22 @@ public class ChallengeFragment extends Fragment {
                                                 }
                                         }
 
+                                });
+                                
+                                // Temporary button for verification -- when clicked, triggers a new activity(verificationActivity)
+                                Button verifyButton = (Button) rootView.findViewById(R.id.btn_verify);
+                                verifyButton.setText("Verify");
+
+                                verifyButton.setOnClickListener(new OnClickListener() {
+
+									@Override
+									public void onClick(View v) {
+										// TODO Auto-generated method stub
+										Intent myIntent = new Intent(v.getContext(), VerificationActivity.class);
+										startActivity(myIntent);
+										
+									}
+                                	
                                 });
                         }
                 } catch (JSONException e) {
