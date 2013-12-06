@@ -14,6 +14,7 @@
     <string name="service_name">Proximity Service</string>
     <string name="email_hint">Email</string>
     <string name="password_hint2">Confirm Password</string>
+    <string name="scan">Scan</string>
     
 
 </resources>
