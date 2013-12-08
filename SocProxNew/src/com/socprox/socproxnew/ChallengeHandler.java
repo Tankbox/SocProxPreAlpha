@@ -24,7 +24,7 @@ public class ChallengeHandler {
 		
 		try {
 			String call = RESTCaller.updateChallengeCall(MAC,
-					Integer.parseInt(challengeInstance.getString("m_iID")),
+					Integer.parseInt(challengeInstance.getJSONObject("body").getString("m_iID")),
 					"accepted");
 			updatedChallenge = restServiceCaller.execute(call);
 		} catch (NumberFormatException e) {
