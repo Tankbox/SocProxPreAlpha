@@ -208,7 +208,11 @@ public class RESTCaller {
 	public static String listChallengesCall(String mac1, String mac2) {
 		return "listChallenges/" + mac1 + "/" + mac2;
 	}
-
+	
+	public static String listChallengesCall(String mac1) {
+		return "listChallenges/" + mac1;
+	}
+	
 	public static String loginCall(Website website, String username) {
 		switch (website) {
 		case FACEBOOK:

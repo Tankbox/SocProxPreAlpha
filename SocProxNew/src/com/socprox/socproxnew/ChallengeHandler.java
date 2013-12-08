@@ -1,12 +1,19 @@
 package com.socprox.socproxnew;
 
+import java.util.ArrayList;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ChallengeHandler {
 
 	private RESTCaller restServiceCaller = new RESTCaller();
-
+	public ArrayList<ChallengeInstance> challengeInstances;
+	
+	public ChallengeHandler(){
+		challengeInstances = new ArrayList<ChallengeInstance>();
+	}
+	
 	public JSONObject GetChallengeInstance(String MAC, int challengeId) {
 		JSONObject challenge = null;
 		
@@ -75,3 +82,7 @@ public class ChallengeHandler {
 			return pendingChallenges;
 	}
 }
+
+
+
+
