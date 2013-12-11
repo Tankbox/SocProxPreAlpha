@@ -30,7 +30,7 @@ public class DashboardActivity extends FragmentActivity implements
 	private ProgressDialog mProgressDialog;
 	private ArrayAdapter<String> mScannedDevices = null;
 	private double[] lastLocation = new double[2];
-	private ChallengeInstance mostRecentChallengeInstance = null;
+	public ChallengeInstance mostRecentChallengeInstance = null;
 	private Vector<String> mBluetoothDevices = new Vector<String>();
 	private ArrayList<String> mValidUsers = new ArrayList<String>();
 
@@ -182,7 +182,9 @@ public class DashboardActivity extends FragmentActivity implements
 						.GetMostRecentChallengeInstance(mBluetoothAdapter
 								.getAddress());
 
-				if (mostRecentChallengeInstance == null) {
+				if ((mostRecentChallengeInstance == null)
+						|| (mostRecentChallengeInstance
+								.ChallengeInstanceHasExpired())) {
 					if (mValidUsers.isEmpty())
 						StartDiscovery();
 					else {
@@ -197,13 +199,11 @@ public class DashboardActivity extends FragmentActivity implements
 								Toast.LENGTH_LONG).show();
 					}
 
-				} else if (mostRecentChallengeInstance
-						.ChallengeInstanceHasExpired()) {
-					// TODO: Delete ALL pending challenges
-					mostRecentChallengeInstance = null;
-					StartDiscovery();
-				} else {}
-//					StartDiscovery();
+				} else {
+					Toast.makeText(DashboardActivity.this,
+							"There is a new challenge waiting for you!",
+							Toast.LENGTH_LONG).show();
+				}
 			}
 		}
 	};

@@ -29,7 +29,7 @@ public class ChallengeFragment extends Fragment {
 	String macAdd2;
 	String challengeUrl = "http://cjcornell.com/bluegame/REST/getChallenge";
 	StringBuilder cUrlBuilder = new StringBuilder();
-
+	ChallengeInstance mostRecentChallengeInstance = null;
 	String updateChallengeUrl = "http://cjcornell.com/bluegame/REST/updateChallenge/";
 	StringBuilder updateUrlBuilder = new StringBuilder();
      
@@ -45,7 +45,7 @@ public class ChallengeFragment extends Fragment {
 
 		JSONArray mValidPlayers = null;
 		String serializedPlayerJsonArray = getArguments().getString("validPlayers");
-		ChallengeInstance mostRecentChallenge = (ChallengeInstance) getArguments().getSerializable("mostRecentChallengeInstance");
+		mostRecentChallengeInstance = (ChallengeInstance) getArguments().getSerializable("mostRecentChallengeInstance");
 		if(!serializedPlayerJsonArray.isEmpty())
 		{
 			try {
@@ -57,65 +57,55 @@ public class ChallengeFragment extends Fragment {
 			}
 		}
 		
-		try { 
-			JSONObject bodyOfChallenge = new JSONObject();
-			String debuggingNextLine;
-			
-			myMacAddress = mBluetoothAdapter.getAddress();
-			
-			if (!mValidPlayers.isNull(0)) {
-//				String challengeRestCall = RESTCaller.getChallengeCall(myMacAddress, macAdd2);
-//				challenges = restServiceCaller.execute(challengeRestCall);
-
-				TextView challengeName = (TextView)rootView.findViewById(R.id.challengeName);
-				bodyOfChallenge = challenges.getJSONObject("body");
-				debuggingNextLine = bodyOfChallenge.getString("m_strName");
-				challengeName.setText(debuggingNextLine);
-
-				TextView challengeDesc = (TextView) rootView.findViewById(R.id.challengeDesc);
-				bodyOfChallenge = challenges.getJSONObject("body");
-				debuggingNextLine = bodyOfChallenge.getString("m_strInstr");
-				challengeDesc.setText(debuggingNextLine);
-
-				final Button acceptButton = (Button) rootView.findViewById(R.id.btn_accept);
-				acceptButton.setText("Accept");
-
-				acceptButton.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View arg0) {
-						// TODO Auto-generated method stub
-						// pushChallenge updates the status of the challenge in
-						// the database
-						
-						ChallengeHandler challengeHandler = new ChallengeHandler();
-						challengeHandler.ChallengeAccepted(myMacAddress, challenges);
-						acceptButton.setVisibility(Button.GONE);
-					}
-
-				});
-
-				final Button denyButton = (Button) rootView.findViewById(R.id.btn_deny);
-				denyButton.setText("Deny");
-
-				denyButton.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						// pushChallenge updates the status of the challenge in
-						// the database
-						
-						ChallengeHandler challengeHandler = new ChallengeHandler();
-						challengeHandler.ChallengeDenied(myMacAddress, challenges);
-						denyButton.setVisibility(Button.GONE);
-					}
-
-				});
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
+		myMacAddress = mBluetoothAdapter.getAddress();
+		
+		TextView challengeName = (TextView)rootView.findViewById(R.id.challengeName);
+		TextView challengeDesc = (TextView) rootView.findViewById(R.id.challengeDesc);
+		
+		if (mostRecentChallengeInstance != null) {
+			challengeName.setText(mostRecentChallengeInstance.challenge.name);
+			challengeDesc.setText(mostRecentChallengeInstance.challenge.description);
 		}
+		else {
+			challengeName.setText("There are no challenges");
+			challengeDesc.setText("But SocProx is scanning for players right now!");				
+		}
+		
+		final Button acceptButton = (Button) rootView.findViewById(R.id.btn_accept);
+		acceptButton.setText("Accept");
+
+		acceptButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				// pushChallenge updates the status of the challenge in
+				// the database
+				
+				ChallengeHandler challengeHandler = new ChallengeHandler();
+				challengeHandler.ChallengeAccepted(myMacAddress, mostRecentChallengeInstance.challengeId);
+				acceptButton.setVisibility(Button.GONE);
+			}
+
+		});
+
+		final Button denyButton = (Button) rootView.findViewById(R.id.btn_deny);
+		denyButton.setText("Deny");
+
+		denyButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				// pushChallenge updates the status of the challenge in
+				// the database
+				
+				ChallengeHandler challengeHandler = new ChallengeHandler();
+				challengeHandler.ChallengeDenied(myMacAddress,  mostRecentChallengeInstance.challengeId);
+				denyButton.setVisibility(Button.GONE);
+			}
+
+		});
 		return rootView;
 	}
 }

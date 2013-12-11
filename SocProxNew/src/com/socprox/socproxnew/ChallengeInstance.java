@@ -93,4 +93,11 @@ public class ChallengeInstance implements Serializable {
 
 		return false;
 	}
+	
+	public boolean UserNeedsToAcceptOrDenyChallengeInstance()
+	{
+		return false;
+		
+	}
+	
 }
