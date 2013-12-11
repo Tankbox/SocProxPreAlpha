@@ -29,6 +29,7 @@ public class DashboardActivity extends FragmentActivity implements
 	protected BluetoothAdapter mBluetoothAdapter;
 	private ProgressDialog mProgressDialog;
 	private ArrayAdapter<String> mScannedDevices = null;
+	private double[] lastLocation = new double[2];
 
 	private Vector<String> mBluetoothDevices = new Vector<String>();
 	private ArrayList<String> mValidUsers = new ArrayList<String>();
@@ -55,6 +56,7 @@ public class DashboardActivity extends FragmentActivity implements
 
 		CheckAndEnableBluetooth();
 		InitializeProgressSpinner();
+		lastLocation = GPSLocation.getLocation(getApplicationContext());
 
 		if (mBluetoothAdapter.isEnabled()) {
 			InitializeArrayAdapters();
@@ -184,6 +186,8 @@ public class DashboardActivity extends FragmentActivity implements
 					}
 				}
 				// TODO Check database for pending challenges
+				ChallengeHandler challengeHandler = new ChallengeHandler();
+				challengeHandler.GetMostRecentChallengeInstance(mBluetoothAdapter.getAddress());
 				StartDiscovery();
 			}
 		}

@@ -2,6 +2,7 @@ package com.socprox.socproxnew;
 
 import java.util.ArrayList;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -70,7 +71,7 @@ public class ChallengeHandler {
 			return updatedChallenge;
 	}
 	
-	public JSONObject GetPendingChallenges(String MAC) {
+	public JSONObject GetPendingChallengeInstances(String MAC) {
 		JSONObject pendingChallenges = null;
 		
 		String call = RESTCaller.getChallengeInstancesCall(MAC, "pending");
@@ -80,6 +81,47 @@ public class ChallengeHandler {
 			return null;
 		else
 			return pendingChallenges;
+	}
+	
+	public ChallengeInstance GetMostRecentChallengeInstance(String MAC) {
+		JSONObject pendingChallenges = null;
+		
+		pendingChallenges = GetPendingChallengeInstances(MAC);
+		ChallengeInstance mostRecentChallengeInstanceObject = null;
+		//TODO: Fill in the logic to find the most recent challenge.
+		try {
+			JSONObject responseCallParsedBody = pendingChallenges.getJSONObject("body");
+			JSONArray responseCallGamesArray = responseCallParsedBody.getJSONArray("Games");
+			JSONObject mostRecentChallengeInstance = FindMostRecentChallengeInstance(responseCallGamesArray);
+			/*
+			JSONObject responseCallSingleGame = responseCallGamesArray.getJSONObject(0);
+			JSONArray responseCallChallengeArray = responseCallSingleGame.getJSONArray("challenges");
+			JSONObject firstChallengeListed = responseCallChallengeArray.getJSONObject(0);
+			*/
+			mostRecentChallengeInstanceObject =  new ChallengeInstance(mostRecentChallengeInstance, MAC);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return mostRecentChallengeInstanceObject;
+	}
+	
+	private JSONObject FindMostRecentChallengeInstance(JSONArray games) throws JSONException
+	{
+		int largestChallengeId = -1;
+		JSONObject mostRecentChallenge = new JSONObject();
+		for (int i = 0; i < games.length(); i++) {
+			JSONObject game = games.getJSONObject(i);
+			JSONArray challengesInGame = game.getJSONArray("challenges");
+			JSONObject challenge = challengesInGame.getJSONObject(challengesInGame.length() - 1);
+			int challengeId = challenge.getInt("m_iID");
+			if(challengeId > largestChallengeId)
+			{
+				largestChallengeId = challengeId;
+				mostRecentChallenge = challenge;
+			}
+		}
+		return mostRecentChallenge;
 	}
 }
 
