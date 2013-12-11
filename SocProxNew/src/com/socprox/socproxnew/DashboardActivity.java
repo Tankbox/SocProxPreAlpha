@@ -53,11 +53,10 @@ public class DashboardActivity extends FragmentActivity implements
 		InitializeBluetoothRecieverFilters();
 
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		lastLocation = GPSLocation.getLocation(getApplicationContext());
+		InitializeProgressSpinner();
 
 		CheckAndEnableBluetooth();
-		InitializeProgressSpinner();
-		lastLocation = GPSLocation.getLocation(getApplicationContext());
-
 		if (mBluetoothAdapter.isEnabled()) {
 			InitializeArrayAdapters();
 
@@ -68,11 +67,15 @@ public class DashboardActivity extends FragmentActivity implements
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			// mUsersFromServer = dashboardRestCaller.execute("users").get();
 			StartDiscovery();
 		}
 	}
 
+	/*
+	 * @Override protected void onStart() {
+	 * 
+	 * }
+	 */
 	public void onLogoutButtonClicked(View v) {
 		SaveSharedPreference.setUserName(getApplicationContext(), "");
 		Intent home = new Intent(DashboardActivity.this, LoginActivity.class);
@@ -185,21 +188,22 @@ public class DashboardActivity extends FragmentActivity implements
 						}
 					}
 				}
-				// TODO Check database for pending challenges
 				ChallengeHandler challengeHandler = new ChallengeHandler();
-				challengeHandler.GetMostRecentChallengeInstance(mBluetoothAdapter.getAddress());
+				ChallengeInstance mostRecentChallengeInstance = challengeHandler
+						.GetMostRecentChallengeInstance(mBluetoothAdapter
+								.getAddress());
+				mostRecentChallengeInstance.ChallengeInstanceHasExpired();
+				// TODO: Check for time stamp on this bizzzness
 				StartDiscovery();
 			}
 		}
 	};
 
 	private void StartDiscovery() {
-
 		// If we're already discovering, stop it
 		if (mBluetoothAdapter.isDiscovering()) {
 			mBluetoothAdapter.cancelDiscovery();
 		}
-
 		// Request discover from BluetoothAdapter
 		mBluetoothAdapter.startDiscovery();
 	}

@@ -16,33 +16,35 @@ public class Challenge {
 	public int gameId;
 	public int verificationId;
 	public String description;
-	
-	public Challenge(JSONObject challenge){
+
+	public Challenge(JSONObject challenge) {
 		this.InitializeChallengeFromJson(challenge);
 	}
-	
-	public Challenge(int challengeId, String thisMacAddress){
+
+	public Challenge(int challengeId, String thisMacAddress) {
 		RESTCaller listChallengesRequest = new RESTCaller();
 		String restUrl = RESTCaller.listChallengesCall(thisMacAddress);
-		JSONObject listChallengesResponse = listChallengesRequest.execute(restUrl);
+		JSONObject listChallengesResponse = listChallengesRequest
+				.execute(restUrl);
 		try {
-			JSONArray arrayOfChallenges = listChallengesResponse.getJSONArray("body");
+			JSONArray arrayOfChallenges = listChallengesResponse
+					.getJSONArray("body");
 			for (int i = 0; i < arrayOfChallenges.length(); i++) {
-			    JSONObject challenge = arrayOfChallenges.getJSONObject(i);
-			    if(challengeId == challenge.getInt("m_iID"))
-			    {
-			    	this.InitializeChallengeFromJson(challenge);
-			    	break;
-			    }
+				JSONObject challenge = arrayOfChallenges.getJSONObject(i);
+				if (challengeId == challenge.getInt("m_iID")) {
+					this.InitializeChallengeFromJson(challenge);
+					break;
+				}
 			}
-				
+
 		} catch (JSONException e) {
-			Log.d("ChallengeInstance Constructor", "JSON object not parsed successfully");
+			Log.d("ChallengeInstance Constructor",
+					"JSON object not parsed successfully");
 			e.printStackTrace();
 		}
 	}
-	
-	private void InitializeChallengeFromJson(JSONObject challenge){
+
+	private void InitializeChallengeFromJson(JSONObject challenge) {
 		try {
 			this.challengeId = challenge.getInt("m_iID");
 			this.internalName = challenge.getString("m_strIntName");
@@ -54,7 +56,8 @@ public class Challenge {
 			this.verificationId = challenge.getInt("m_iVerificationID");
 			this.description = challenge.getString("m_strDesc");
 		} catch (JSONException e) {
-			Log.d("ChallengeInstance SetInstanceVariablesFromJson", "JSON object not parsed successfully");
+			Log.d("ChallengeInstance SetInstanceVariablesFromJson",
+					"JSON object not parsed successfully");
 			e.printStackTrace();
 		}
 	}

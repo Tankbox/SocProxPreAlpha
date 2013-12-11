@@ -21,54 +21,71 @@ public class ChallengeInstance {
 	public String status;
 	public String acceptanceStatus;
 	protected Challenge challenge;
-	public Date challengeTimestamp;	
-	
-	public ChallengeInstance(JSONObject challengeInstance, String thisMacAddress)
-	{
+	public Date challengeTimestamp;
+	private SimpleDateFormat mysqlDateTimeFormatter = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss");
+	private final static long THREE_MINUTES = 180000;
+
+	public ChallengeInstance(JSONObject challengeInstance, String thisMacAddress) {
 		userIds = new ArrayList<String>();
 		opponentsUsernames = new ArrayList<String>();
 		this.InitializeChallengeInstanceFromJson(challengeInstance);
 
 		try {
-			this.challenge = new Challenge(challengeInstance.getJSONObject("m_oChallenge"));
+			this.challenge = new Challenge(
+					challengeInstance.getJSONObject("m_oChallenge"));
 		} catch (JSONException e) {
 			this.challenge = new Challenge(challengeId, thisMacAddress);
 		}
 	}
-	
-	private void InitializeChallengeInstanceFromJson(JSONObject challengeInstance)
-	{
-		SimpleDateFormat mysqlDateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+	private void InitializeChallengeInstanceFromJson(
+			JSONObject challengeInstance) {
 		try {
-			//challengeInstance.get("success");
-			//JSONObject challengeInstanceBody = challengeInstance.getJSONObject("body");
-			this.challengeInstanceId = Integer.parseInt(challengeInstance.getString("m_iID"));
-			this.challengeId = Integer.parseInt(challengeInstance.getString("m_iChallengeID"));
+			// challengeInstance.get("success");
+			// JSONObject challengeInstanceBody =
+			// challengeInstance.getJSONObject("body");
+			this.challengeInstanceId = Integer.parseInt(challengeInstance
+					.getString("m_iID"));
+			this.challengeId = Integer.parseInt(challengeInstance
+					.getString("m_iChallengeID"));
 			String tempUserIds = challengeInstance.getString("m_strUserIDs");
-			if(tempUserIds.contains(";"))
-			{
+			if (tempUserIds.contains(";")) {
 				this.userIds = Arrays.asList(tempUserIds.split(";"));
-			}
-			else
-			{
+			} else {
 				this.userIds.add(tempUserIds);
 			}
-			JSONArray opponentsArray = challengeInstance.getJSONArray("m_aOpponents");
-			for(int i = 0 ; i < opponentsArray.length(); i++){
+			JSONArray opponentsArray = challengeInstance
+					.getJSONArray("m_aOpponents");
+			for (int i = 0; i < opponentsArray.length(); i++) {
 				this.opponentsUsernames.add(opponentsArray.getString(i));
 			}
 			this.status = challengeInstance.getString("m_strStatus");
-			
 			this.acceptanceStatus = challengeInstance.getString("m_strAccepts");
-			this.challengeTimestamp = mysqlDateTimeFormatter.parse(challengeInstance.getString("m_oDate"));
-			
+			this.challengeTimestamp = mysqlDateTimeFormatter
+					.parse(challengeInstance.getString("m_oDate"));
+
 		} catch (JSONException e) {
-			Log.d("ChallengeInstance Constructor", "JSON object not parsed successfully");
+			Log.d("ChallengeInstance Constructor",
+					"JSON object not parsed successfully");
 			e.printStackTrace();
 		} catch (ParseException e) {
-			Log.d("ChallengeInstance Constructor", "Date object was not parsed successfully");
+			Log.d("ChallengeInstance Constructor",
+					"Date object was not parsed successfully");
 			e.printStackTrace();
 		}
+	}
+
+	public boolean ChallengeInstanceHasExpired() {
+		Date currentDateAndTime = new Date();
+
+		long currentMilliseconds = currentDateAndTime.getTime();
+		long challengeInstanceMilliseconds = this.challengeTimestamp.getTime();
+		long difference = currentMilliseconds - challengeInstanceMilliseconds;
+
+		if (difference > THREE_MINUTES)
+			return true;
+
+		return false;
 	}
 }
