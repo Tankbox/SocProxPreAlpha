@@ -69,9 +69,9 @@ public class ChallengeFragment extends Fragment {
 		
 		if (mostRecentChallengeInstance != null) {
 			challengeName.setText(mostRecentChallengeInstance.challenge.name);
-			challengeDesc.setText(mostRecentChallengeInstance.challenge.description);
 			denyButton.setVisibility(Button.VISIBLE);
 			acceptButton.setVisibility(Button.VISIBLE);
+			challengeDesc.setText(mostRecentChallengeInstance.challenge.instructions);
 		}
 		else {
 			challengeName.setText("There are no challenges");
