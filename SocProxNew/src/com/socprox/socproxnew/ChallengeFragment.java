@@ -42,7 +42,12 @@ public class ChallengeFragment extends Fragment {
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.challenge_fragment,
 				container, false);
-
+		
+		final Button acceptButton = (Button) rootView.findViewById(R.id.btn_accept);
+		final Button denyButton = (Button) rootView.findViewById(R.id.btn_deny);
+		acceptButton.setText("Accept");
+		denyButton.setText("Deny");
+		
 		JSONArray mValidPlayers = null;
 		String serializedPlayerJsonArray = getArguments().getString("validPlayers");
 		mostRecentChallengeInstance = (ChallengeInstance) getArguments().getSerializable("mostRecentChallengeInstance");
@@ -65,32 +70,15 @@ public class ChallengeFragment extends Fragment {
 		if (mostRecentChallengeInstance != null) {
 			challengeName.setText(mostRecentChallengeInstance.challenge.name);
 			challengeDesc.setText(mostRecentChallengeInstance.challenge.description);
+			denyButton.setVisibility(Button.VISIBLE);
+			acceptButton.setVisibility(Button.VISIBLE);
 		}
 		else {
 			challengeName.setText("There are no challenges");
-			challengeDesc.setText("But SocProx is scanning for players right now!");				
+			challengeDesc.setText("But SocProx is scanning for players right now!");	
+			denyButton.setVisibility(Button.INVISIBLE);
+			acceptButton.setVisibility(Button.INVISIBLE);
 		}
-		
-		final Button acceptButton = (Button) rootView.findViewById(R.id.btn_accept);
-		acceptButton.setText("Accept");
-
-		acceptButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				// pushChallenge updates the status of the challenge in
-				// the database
-				
-				ChallengeHandler challengeHandler = new ChallengeHandler();
-				challengeHandler.ChallengeAccepted(myMacAddress, mostRecentChallengeInstance.challengeId);
-				acceptButton.setVisibility(Button.GONE);
-			}
-
-		});
-
-		final Button denyButton = (Button) rootView.findViewById(R.id.btn_deny);
-		denyButton.setText("Deny");
 
 		denyButton.setOnClickListener(new OnClickListener() {
 
@@ -101,7 +89,23 @@ public class ChallengeFragment extends Fragment {
 				// the database
 				
 				ChallengeHandler challengeHandler = new ChallengeHandler();
-				challengeHandler.ChallengeDenied(myMacAddress,  mostRecentChallengeInstance.challengeId);
+				challengeHandler.ChallengeDenied(myMacAddress,  mostRecentChallengeInstance.challengeInstanceId);
+				denyButton.setVisibility(Button.GONE);
+				acceptButton.setVisibility(Button.GONE);
+			}
+		});
+		
+		acceptButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				// pushChallenge updates the status of the challenge in
+				// the database
+				
+				ChallengeHandler challengeHandler = new ChallengeHandler();
+				challengeHandler.ChallengeAccepted(myMacAddress, mostRecentChallengeInstance.challengeInstanceId);
+				acceptButton.setVisibility(Button.GONE);
 				denyButton.setVisibility(Button.GONE);
 			}
 

@@ -47,7 +47,7 @@ public final class R {
     }
     public static final class id {
         public static final int RelativeLayout1=0x7f090004;
-        public static final int action_settings=0x7f090022;
+        public static final int action_settings=0x7f090025;
         public static final int blank=0x7f09000d;
         public static final int blank2=0x7f090013;
         public static final int btn_accept=0x7f090009;
@@ -72,6 +72,9 @@ public final class R {
         public static final int logoutUser=0x7f090001;
         public static final int password=0x7f09001b;
         public static final int password2=0x7f09001f;
+        public static final int scan_button=0x7f090022;
+        public static final int scan_content=0x7f090024;
+        public static final int scan_format=0x7f090023;
         public static final int section_label=0x7f090005;
         public static final int strGameDescription=0x7f090010;
         public static final int strGameDescription2=0x7f090016;
@@ -90,6 +93,7 @@ public final class R {
         public static final int login=0x7f030004;
         public static final int signup=0x7f030005;
         public static final int stats_fragment=0x7f030006;
+        public static final int verification=0x7f030007;
     }
     public static final class menu {
         public static final int dashboard=0x7f080000;
