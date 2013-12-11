@@ -30,7 +30,7 @@ public class DashboardActivity extends FragmentActivity implements
 	private ProgressDialog mProgressDialog;
 	private ArrayAdapter<String> mScannedDevices = null;
 	private double[] lastLocation = new double[2];
-
+	private ChallengeInstance mostRecentChallengeInstance = null;
 	private Vector<String> mBluetoothDevices = new Vector<String>();
 	private ArrayList<String> mValidUsers = new ArrayList<String>();
 
@@ -40,7 +40,6 @@ public class DashboardActivity extends FragmentActivity implements
 
 	private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
 
-	// static AsyncTask<String, Integer, JSONArray> dashboardRestCaller;
 	static AsyncTask<Void, Void, JSONArray> dashboardBluetoothHandler;
 	private RESTCaller restServiceCaller = new RESTCaller();
 
@@ -71,11 +70,6 @@ public class DashboardActivity extends FragmentActivity implements
 		}
 	}
 
-	/*
-	 * @Override protected void onStart() {
-	 * 
-	 * }
-	 */
 	public void onLogoutButtonClicked(View v) {
 		SaveSharedPreference.setUserName(getApplicationContext(), "");
 		Intent home = new Intent(DashboardActivity.this, LoginActivity.class);
@@ -83,11 +77,6 @@ public class DashboardActivity extends FragmentActivity implements
 	}
 
 	private void InitializeActionBar() {
-		// EditText userNameTextField =
-		// (EditText)findViewById(R.id.displayUserName);
-		// userNameTextField.setText("Welcome " +
-		// SaveSharedPreference.getUserName(getApplicationContext()));
-
 		SaveSharedPreference.getUserName(getApplicationContext());
 		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowTitleEnabled(false);
@@ -189,12 +178,32 @@ public class DashboardActivity extends FragmentActivity implements
 					}
 				}
 				ChallengeHandler challengeHandler = new ChallengeHandler();
-				ChallengeInstance mostRecentChallengeInstance = challengeHandler
+				mostRecentChallengeInstance = challengeHandler
 						.GetMostRecentChallengeInstance(mBluetoothAdapter
 								.getAddress());
-				mostRecentChallengeInstance.ChallengeInstanceHasExpired();
-				// TODO: Check for time stamp on this bizzzness
-				StartDiscovery();
+
+				if (mostRecentChallengeInstance == null) {
+					if (mValidUsers.isEmpty())
+						StartDiscovery();
+					else {
+						challengeHandler.CreateChallengeInstance(
+								mBluetoothAdapter.getAddress(),
+								mValidUsers.get(0));
+						mostRecentChallengeInstance = challengeHandler
+							.GetMostRecentChallengeInstance(mBluetoothAdapter
+									.getAddress());
+						Toast.makeText(DashboardActivity.this,
+								"There is a new challenge waiting for you!",
+								Toast.LENGTH_LONG).show();
+					}
+
+				} else if (mostRecentChallengeInstance
+						.ChallengeInstanceHasExpired()) {
+					// TODO: Delete ALL pending challenges
+					mostRecentChallengeInstance = null;
+					StartDiscovery();
+				} else {}
+//					StartDiscovery();
 			}
 		}
 	};
@@ -243,6 +252,9 @@ public class DashboardActivity extends FragmentActivity implements
 		case CHALLENGE_VIEW:
 			fragment = new ChallengeFragment();
 			args.putString("validPlayers", mValidPlayers.toString());
+			args.putSerializable("mostRecentChallengeInstance",
+					mostRecentChallengeInstance);
+			
 			break;
 		default:
 			fragment = new Fragment();

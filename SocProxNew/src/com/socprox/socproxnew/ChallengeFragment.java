@@ -25,7 +25,7 @@ public class ChallengeFragment extends Fragment {
 	
 	JSONObject challenges;
 	JSONObject updateChallenge; 
-	String macAdd1;
+	String myMacAddress;
 	String macAdd2;
 	String challengeUrl = "http://cjcornell.com/bluegame/REST/getChallenge";
 	StringBuilder cUrlBuilder = new StringBuilder();
@@ -45,6 +45,7 @@ public class ChallengeFragment extends Fragment {
 
 		JSONArray mValidPlayers = null;
 		String serializedPlayerJsonArray = getArguments().getString("validPlayers");
+		ChallengeInstance mostRecentChallenge = (ChallengeInstance) getArguments().getSerializable("mostRecentChallengeInstance");
 		if(!serializedPlayerJsonArray.isEmpty())
 		{
 			try {
@@ -60,16 +61,12 @@ public class ChallengeFragment extends Fragment {
 			JSONObject bodyOfChallenge = new JSONObject();
 			String debuggingNextLine;
 			
-			macAdd1 = mBluetoothAdapter.getAddress(); // mac address of this user
-			// check if the current user has another player to play with
+			myMacAddress = mBluetoothAdapter.getAddress();
+			
 			if (!mValidPlayers.isNull(0)) {
-				macAdd2 = mValidPlayers.getJSONObject(0).getString(
-						TAG_MAC_ADDRESS); // mac address of the player who is
-											// also playing this challenge
-				String challengeRestCall = RESTCaller.getChallengeCall(macAdd1, macAdd2);
-				challenges = restServiceCaller.execute(challengeRestCall);
+//				String challengeRestCall = RESTCaller.getChallengeCall(myMacAddress, macAdd2);
+//				challenges = restServiceCaller.execute(challengeRestCall);
 
-				// get challenge information to display on screen
 				TextView challengeName = (TextView)rootView.findViewById(R.id.challengeName);
 				bodyOfChallenge = challenges.getJSONObject("body");
 				debuggingNextLine = bodyOfChallenge.getString("m_strName");
@@ -92,7 +89,7 @@ public class ChallengeFragment extends Fragment {
 						// the database
 						
 						ChallengeHandler challengeHandler = new ChallengeHandler();
-						challengeHandler.ChallengeAccepted(macAdd1, challenges);
+						challengeHandler.ChallengeAccepted(myMacAddress, challenges);
 						acceptButton.setVisibility(Button.GONE);
 					}
 
@@ -110,7 +107,7 @@ public class ChallengeFragment extends Fragment {
 						// the database
 						
 						ChallengeHandler challengeHandler = new ChallengeHandler();
-						challengeHandler.ChallengeDenied(macAdd1, challenges);
+						challengeHandler.ChallengeDenied(myMacAddress, challenges);
 						denyButton.setVisibility(Button.GONE);
 					}
 

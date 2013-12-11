@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Date;
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -13,7 +14,11 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-public class ChallengeInstance {
+public class ChallengeInstance implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2649953741916013393L;
 	public int challengeInstanceId;
 	public int challengeId;
 	public List<String> userIds;
@@ -30,7 +35,7 @@ public class ChallengeInstance {
 		userIds = new ArrayList<String>();
 		opponentsUsernames = new ArrayList<String>();
 		this.InitializeChallengeInstanceFromJson(challengeInstance);
-
+		
 		try {
 			this.challenge = new Challenge(
 					challengeInstance.getJSONObject("m_oChallenge"));

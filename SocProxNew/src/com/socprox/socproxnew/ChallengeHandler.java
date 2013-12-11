@@ -27,21 +27,12 @@ public class ChallengeHandler {
 			return challenge;
 	}
 
-	public JSONObject ChallengeAccepted(String MAC, JSONObject challengeInstance) {
+	public JSONObject ChallengeAccepted(String MAC, int challengeInstanceId) {
 		JSONObject updatedChallenge = null;
 
-		try {
-			String call = RESTCaller.updateChallengeCall(MAC, Integer
-					.parseInt(challengeInstance.getJSONObject("body")
-							.getString("m_iID")), "accepted");
-			updatedChallenge = restServiceCaller.execute(call);
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String call = RESTCaller.updateChallengeCall(MAC,
+				challengeInstanceId, "accepted");
+		updatedChallenge = restServiceCaller.execute(call);
 
 		if (updatedChallenge == null)
 			return null;
@@ -49,21 +40,12 @@ public class ChallengeHandler {
 			return updatedChallenge;
 	}
 
-	public JSONObject ChallengeDenied(String MAC, JSONObject challengeInstance) {
+	public JSONObject ChallengeDenied(String MAC, int challengeInstanceId) {
 		JSONObject updatedChallenge = null;
 
-		try {
-			String call = RESTCaller.updateChallengeCall(MAC,
-					Integer.parseInt(challengeInstance.getString("m_iID")),
-					"denied");
-			updatedChallenge = restServiceCaller.execute(call);
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String call = RESTCaller.updateChallengeCall(MAC,
+				challengeInstanceId, "denied");
+		updatedChallenge = restServiceCaller.execute(call);
 
 		if (updatedChallenge == null)
 			return null;
@@ -71,7 +53,7 @@ public class ChallengeHandler {
 			return updatedChallenge;
 	}
 
-	public JSONObject GetPendingChallengeInstances(String MAC) {
+	private JSONObject GetPendingChallengeInstances(String MAC) {
 		JSONObject pendingChallenges = null;
 
 		String call = RESTCaller.getChallengeInstancesCall(MAC, "pending");
@@ -88,21 +70,16 @@ public class ChallengeHandler {
 
 		pendingChallenges = GetPendingChallengeInstances(MAC);
 		ChallengeInstance mostRecentChallengeInstanceObject = null;
-		// TODO: Fill in the logic to find the most recent challenge.
 		try {
+			if (!pendingChallenges.getBoolean("success"))
+				return null;
+			
 			JSONObject responseCallParsedBody = pendingChallenges
 					.getJSONObject("body");
 			JSONArray responseCallGamesArray = responseCallParsedBody
 					.getJSONArray("Games");
 			JSONObject mostRecentChallengeInstance = FindMostRecentChallengeInstance(responseCallGamesArray);
-			/*
-			 * JSONObject responseCallSingleGame =
-			 * responseCallGamesArray.getJSONObject(0); JSONArray
-			 * responseCallChallengeArray =
-			 * responseCallSingleGame.getJSONArray("challenges"); JSONObject
-			 * firstChallengeListed =
-			 * responseCallChallengeArray.getJSONObject(0);
-			 */
+
 			mostRecentChallengeInstanceObject = new ChallengeInstance(
 					mostRecentChallengeInstance, MAC);
 		} catch (JSONException e) {
@@ -128,5 +105,16 @@ public class ChallengeHandler {
 			}
 		}
 		return mostRecentChallenge;
+	}
+
+	public boolean CreateChallengeInstance(String myMac, String otherPlayerMac) {
+		String createChallengeInstanceRestCall = RESTCaller.getChallengeCall(myMac, otherPlayerMac);		
+		try {
+			return restServiceCaller.execute(createChallengeInstanceRestCall).getBoolean("success");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 }
