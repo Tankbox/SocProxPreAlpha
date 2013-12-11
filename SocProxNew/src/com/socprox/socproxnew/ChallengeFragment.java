@@ -57,6 +57,9 @@ public class ChallengeFragment extends Fragment {
 		}
 		
 		try { 
+			JSONObject bodyOfChallenge = new JSONObject();
+			String debuggingNextLine;
+			
 			macAdd1 = mBluetoothAdapter.getAddress(); // mac address of this user
 			// check if the current user has another player to play with
 			if (!mValidPlayers.isNull(0)) {
@@ -68,10 +71,14 @@ public class ChallengeFragment extends Fragment {
 
 				// get challenge information to display on screen
 				TextView challengeName = (TextView)rootView.findViewById(R.id.challengeName);
-				challengeName.setText(challenges.getString("m_strName"));
+				bodyOfChallenge = challenges.getJSONObject("body");
+				debuggingNextLine = bodyOfChallenge.getString("m_strName");
+				challengeName.setText(debuggingNextLine);
 
 				TextView challengeDesc = (TextView) rootView.findViewById(R.id.challengeDesc);
-				challengeDesc.setText(challenges.getString("m_strInstr"));
+				bodyOfChallenge = challenges.getJSONObject("body");
+				debuggingNextLine = bodyOfChallenge.getString("m_strInstr");
+				challengeDesc.setText(debuggingNextLine);
 
 				final Button acceptButton = (Button) rootView.findViewById(R.id.btn_accept);
 				acceptButton.setText("Accept");
