@@ -183,6 +183,7 @@ public class DashboardActivity extends FragmentActivity implements
 						}
 					}
 				}
+				// TODO Check database for pending challenges
 				StartDiscovery();
 			}
 		}
