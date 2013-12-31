@@ -1,16 +1,142 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".DashboardActivity$DummySectionFragment" >
+    android:isScrollContainer="true"
+    android:overScrollMode="always"
+    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:scrollbarStyle="outsideInset"
+    android:scrollbars="vertical"
+    tools:context=".jsonActivity" >
 
-    <TextView
-        android:id="@+id/section_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin" >
 
-</RelativeLayout>
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:rowCount="3" >
+
+            <TextView
+                android:id="@+id/iChallengesCompleted"
+                android:layout_width="172dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="@string/challenges_completed" />
+
+            <TextView
+                android:id="@+id/iChallengesCompletedValue"
+                android:layout_width="68dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="fill_horizontal"
+                android:text="Test" />
+        </GridLayout>
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:rowCount="3" >
+
+            <TextView
+                android:id="@+id/strGameName"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="Test" />
+
+            <TextView
+                android:id="@+id/blank"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/iTotalPoints"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="@string/total_points" />
+
+            <TextView
+                android:id="@+id/iTotalPointsValue"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="Test" />
+
+            <TextView
+                android:id="@+id/strGameDescription"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="@string/description" />
+
+            <TextView
+                android:id="@+id/strGameDescriptionValue"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="Test" />
+        </GridLayout>
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:rowCount="2" >
+
+            <TextView
+                android:id="@+id/strGameName2"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="Test" />
+
+            <TextView
+                android:id="@+id/blank2"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/iTotalPoints2"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="@string/total_points" />
+
+            <TextView
+                android:id="@+id/iTotalPointsValue2"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="Test" />
+
+            <TextView
+                android:id="@+id/strGameDescription2"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="@string/description" />
+
+            <TextView
+                android:id="@+id/strGameDescriptionValue2"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="Test" />
+        </GridLayout>
+    </LinearLayout>
+
+</ScrollView>

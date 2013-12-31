@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
 import java.util.Map.Entry;
 
 import android.content.Context;
@@ -18,27 +17,22 @@ public class ServerUtilities {
 private static final String TAG = "ServerUtilities";
 	
 	private static final int MAX_ATTEMPTS = 5;
-    private static final int BACKOFF_MILLI_SECONDS = 2000;
-    private static final Random random = new Random();
-
     /**
      * Register this account/device pair within the server.
      *
      */
     static void register(final Context context, String name, String email, final String regId, String socproxID) {
         Log.i(TAG, "registering device (regId = " + regId + ")");
-        String serverUrl = CommonUtilities.SERVER_URL + "/register.php";
         Map<String, String> params = new HashMap<String, String>();
         params.put("regId", regId);
         params.put("name", name);
         params.put("email", email);
         params.put("socproxID", socproxID);
         
-        long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
         // Once GCM returns a registration id, we need to register on our server
         // As the server might be down, we will retry it a couple
         // times.
-        for (int i = 1; i <= MAX_ATTEMPTS; i++) {
+        for (int i = 1; i <= MAX_ATTEMPTS;) {
             Log.d(TAG, "Attempt #" + i + " to register");
             //            	CommonUtilities.displayMessage(context, context.getString(
 //                        R.string.server_registering, i, MAX_ATTEMPTS));

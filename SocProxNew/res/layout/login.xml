@@ -38,7 +38,7 @@
 	    android:layout_gravity="center"
 	    android:hint="@string/password_hint"
 	    android:inputType="textPassword"
-	    android:imeOptions="actionSend"
+	    android:imeOptions="actionDone"
 	    android:textColor="#ffffff" />
     
     <Button

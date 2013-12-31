@@ -46,27 +46,54 @@ public final class R {
         public static final int logo=0x7f020002;
     }
     public static final class id {
-        public static final int action_settings=0x7f09000d;
-        public static final int btn_fblogin=0x7f090006;
-        public static final int btn_login=0x7f090009;
-        public static final int btn_signup=0x7f09000a;
+        public static final int RelativeLayout1=0x7f090004;
+        public static final int action_settings=0x7f090025;
+        public static final int blank=0x7f09000d;
+        public static final int blank2=0x7f090013;
+        public static final int btn_accept=0x7f090009;
+        public static final int btn_deny=0x7f090008;
+        public static final int btn_fblogin=0x7f090019;
+        public static final int btn_login=0x7f09001c;
+        public static final int btn_signup=0x7f09001d;
         public static final int buttonAlert=0x7f090003;
+        public static final int challengeDesc=0x7f090007;
+        public static final int challengeName=0x7f090006;
         public static final int container=0x7f090000;
-        public static final int displayUserName=0x7f090001;
-        public static final int email=0x7f09000b;
-        public static final int imageView1=0x7f090005;
-        public static final int logoutUser=0x7f090002;
-        public static final int password=0x7f090008;
-        public static final int password2=0x7f09000c;
-        public static final int section_label=0x7f090004;
-        public static final int user_name=0x7f090007;
+        public static final int dashboardFragmentArea=0x7f090002;
+        public static final int email=0x7f09001e;
+        public static final int iChallengesCompleted=0x7f09000a;
+        public static final int iChallengesCompletedValue=0x7f09000b;
+        public static final int iTotalPoints=0x7f09000e;
+        public static final int iTotalPoints2=0x7f090014;
+        public static final int iTotalPointsValue=0x7f09000f;
+        public static final int iTotalPointsValue2=0x7f090015;
+        public static final int imageView1=0x7f090018;
+        public static final int list=0x7f090021;
+        public static final int logoutUser=0x7f090001;
+        public static final int password=0x7f09001b;
+        public static final int password2=0x7f09001f;
+        public static final int scan_button=0x7f090022;
+        public static final int scan_content=0x7f090024;
+        public static final int scan_format=0x7f090023;
+        public static final int section_label=0x7f090005;
+        public static final int strGameDescription=0x7f090010;
+        public static final int strGameDescription2=0x7f090016;
+        public static final int strGameDescriptionValue=0x7f090011;
+        public static final int strGameDescriptionValue2=0x7f090017;
+        public static final int strGameName=0x7f09000c;
+        public static final int strGameName2=0x7f090012;
+        public static final int totalPointsTextView=0x7f090020;
+        public static final int user_name=0x7f09001a;
     }
     public static final class layout {
         public static final int activity_dashboard=0x7f030000;
         public static final int alert=0x7f030001;
-        public static final int fragment_dashboard_dummy=0x7f030002;
-        public static final int login=0x7f030003;
-        public static final int signup=0x7f030004;
+        public static final int challenge_fragment=0x7f030002;
+        public static final int fragment_dashboard_dummy=0x7f030003;
+        public static final int login=0x7f030004;
+        public static final int signup=0x7f030005;
+        public static final int stats_fragment=0x7f030006;
+        public static final int verification=0x7f030007;
     }
     public static final class menu {
         public static final int dashboard=0x7f080000;
@@ -75,8 +102,10 @@ public final class R {
         public static final int action_settings=0x7f060001;
         public static final int app_name=0x7f060000;
         public static final int challenge_section=0x7f060002;
+        public static final int challenges_completed=0x7f06000d;
         public static final int desc_fbutton=0x7f060004;
         public static final int desc_logo=0x7f060009;
+        public static final int description=0x7f06000f;
         public static final int email_hint=0x7f06000b;
         public static final int login=0x7f060007;
         public static final int password_hint=0x7f060005;
@@ -84,6 +113,7 @@ public final class R {
         public static final int service_name=0x7f06000a;
         public static final int sign_up=0x7f060008;
         public static final int stats_section=0x7f060003;
+        public static final int total_points=0x7f06000e;
         public static final int user_name_hint=0x7f060006;
     }
     public static final class style {
