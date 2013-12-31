@@ -29,7 +29,6 @@ public class DashboardActivity extends FragmentActivity implements
 	protected BluetoothAdapter mBluetoothAdapter;
 	private ProgressDialog mProgressDialog;
 	private ArrayAdapter<String> mScannedDevices = null;
-	private double[] lastLocation = new double[2];
 	public ChallengeInstance mostRecentChallengeInstance = null;
 	private Vector<String> mBluetoothDevices = new Vector<String>();
 	private ArrayList<String> mValidUsers = new ArrayList<String>();
@@ -52,7 +51,7 @@ public class DashboardActivity extends FragmentActivity implements
 		InitializeBluetoothRecieverFilters();
 
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		lastLocation = GPSLocation.getLocation(getApplicationContext());
+		GPSLocation.getLocation(getApplicationContext());
 		InitializeProgressSpinner();
 
 		CheckAndEnableBluetooth();
@@ -67,6 +66,7 @@ public class DashboardActivity extends FragmentActivity implements
 				e.printStackTrace();
 
 			StartDiscovery();
+			}
 		}
 	}
 
@@ -143,51 +143,6 @@ public class DashboardActivity extends FragmentActivity implements
 	}
 
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-<<<<<<< HEAD
- 		@Override
- 		public void onReceive(Context context, Intent intent) {
- 			String action = intent.getAction();
- 			// When discovery finds a device
- 			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
- 				// Get the BluetoothDevice object from the Intent
- 				BluetoothDevice device = intent
- 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
- 				// Add the address to an array adapter to show in a ListView
- 				mBluetoothDevices.add(device.getAddress());
- 				mScannedDevices.add(device.getAddress());
- 			}
- 			else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
-            {
- 				for (int i = 0; i < mBluetoothDevices.size(); ++i) {
- 					String bluetoothDeviceScanned = mBluetoothDevices.elementAt(i);
- 					for (int j = 0; j < mUsersFromServer.length(); ++j) {
- 						try {
- 							String userFromServer = mUsersFromServer.getJSONObject(j).get("m_strMac").toString();
- 							if (userFromServer.equals(bluetoothDeviceScanned) && !mValidUsers.contains(bluetoothDeviceScanned))
- 							{
- 								if(mValidUsers.isEmpty())
- 						        	Toast.makeText(DashboardActivity.this, "Players found, incoming challenge ~~", Toast.LENGTH_SHORT).show();
-
- 								mValidUsers.add(userFromServer);
-								mValidPlayers.put(mUsersFromServer.getJSONObject(j));
- 							}
- 						} catch (JSONException e) {
- 							// TODO Auto-generated catch block
- 							e.printStackTrace();
- 						}
- 					}
- 				}
- 				StartDiscovery();
-            }
- 		}
- 	};
- 	
- 	private void StartDiscovery(){
-        // If we're already discovering, stop it
-        if (mBluetoothAdapter.isDiscovering()) {
-        	mBluetoothAdapter.cancelDiscovery();
-        }
-=======
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
@@ -243,8 +198,6 @@ public class DashboardActivity extends FragmentActivity implements
 								"There is a new challenge waiting for you!",
 								Toast.LENGTH_LONG).show();
 					}
->>>>>>> BossingHard
-
 				} else {
 					Toast.makeText(DashboardActivity.this,
 							"There is a new challenge waiting for you!",

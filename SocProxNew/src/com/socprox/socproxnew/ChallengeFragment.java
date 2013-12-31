@@ -19,9 +19,7 @@ public class ChallengeFragment extends Fragment {
 	private static final String DEBUG_TAG = "ChallengeFragment";
 
 	public static final String ARG_SECTION_NUMBER = "section_number";
-	private RESTCaller restServiceCaller = new RESTCaller();
-    private static final String TAG_MAC_ADDRESS = "m_strMac";
-    private BluetoothAdapter mBluetoothAdapter;
+	private BluetoothAdapter mBluetoothAdapter;
 	
 	JSONObject challenges;
 	JSONObject updateChallenge; 
@@ -48,13 +46,12 @@ public class ChallengeFragment extends Fragment {
 		acceptButton.setText("Accept");
 		denyButton.setText("Deny");
 		
-		JSONArray mValidPlayers = null;
 		String serializedPlayerJsonArray = getArguments().getString("validPlayers");
 		mostRecentChallengeInstance = (ChallengeInstance) getArguments().getSerializable("mostRecentChallengeInstance");
 		if(!serializedPlayerJsonArray.isEmpty())
 		{
 			try {
-				mValidPlayers = new JSONArray(serializedPlayerJsonArray);
+				new JSONArray(serializedPlayerJsonArray);
 			} catch (JSONException e1) {
 				// TODO Auto-generated catch block
 				Log.d(DEBUG_TAG, "Error trying to parse JSON from valid players");
